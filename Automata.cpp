@@ -4,10 +4,6 @@
 #include <iostream>
 using namespace std;
 
-Automata::Automata(){
-    
-}
-
 Automata::Automata() {
     estadoInicial = nullptr;
     estadoActual = nullptr;
@@ -18,7 +14,7 @@ Automata::Automata(Estado* estadoInicial) {
 }
 
 void Automata::agregarEstados(Estado* estado){
-    estados.add(estado);
+    estados.push_back(estado);
 }
 
 void Automata::reiniciar(){
@@ -33,15 +29,18 @@ void Automata::reiniciar(){
 void Automata::avanzar(char caracter){
     lexema+=caracter;
 
-    if(caracter.match(regex("[A-Za-z]"))){
+    if(isalpha(caracter)){
+        cout <<"escarac"<<endl;
+
 
     }
-    else if(caracter.match(regex("[0-9]"))){
+    else if(isdigit(caracter)){
+        cout<<"esnum"<<endl;
+    }
+    /*else if(caracter.match(regex("[+\-=!(),{}\[\];"))){
 
     }
-    else if(caracter.match(regex("[+\-*/=!(),{}\[\];"))){
-
-    }
+    */
 
 }
 

@@ -1,7 +1,9 @@
+#pragma once
+
 #include <iostream>
 #include <regex>
 using namespace std;
-#include "Estado.h"
+class Estado;
 
 
 class Transicion {

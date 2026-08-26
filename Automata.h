@@ -17,4 +17,4 @@ public:
     void reiniciar();
     void avanzar(char caracter);
     Estado* getActual();
-}
+};

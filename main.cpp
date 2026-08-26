@@ -12,6 +12,17 @@ int main(){
     Estado *espacioFinal = new Estado(true);
     Transicion letraLeida(regex("[A-Za-z]"), letra);
     Automata automata(inicial); 
+    automata.agregarEstados(inicial);
+    automata.agregarEstados(letra);
+    automata.agregarEstados(espacioFinal);
+
+
+    inicial->agregarTransicion(&letraLeida);
+
+    for (char caracter : codigo) {
+        automata.avanzar(caracter);
+        cout<<caracter<<endl;
+    }
 
     ///
 

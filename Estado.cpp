@@ -30,3 +30,11 @@ Estado* Estado::getSiguiente(char caracter) {
 
     return nullptr;
 }
+
+Estado:: Estado(bool aceptacion) {
+    
+}
+
+bool Estado::isTodoLeido() {
+    return todoLeido;
+}

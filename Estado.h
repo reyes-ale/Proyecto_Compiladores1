@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 using namespace std;
 #include "Transicion.h"
@@ -13,7 +15,7 @@ class Estado {
     public:
         Estado();
         Estado(bool aceptacion);
-        Estado(bool aceptacion, bool todoLeido;);
+        Estado(bool aceptacion, bool todoLeido);
         void agregarTransicion(Transicion* transicion);
         bool isAceptacion();
         bool isTodoLeido();
