@@ -10,14 +10,8 @@ void Estado::agregarTransicion(Transicion* transicion) {
     transiciones.push_back(*transicion);
 }
 
-vector<Transicion*> Estado::getTransiciones() {
-    vector<Transicion*> transicionesPtr;
-
-    for (Transicion& transicion : transiciones) {
-        transicionesPtr.push_back(&transicion);
-    }
-
-    return transicionesPtr;
+vector<Transicion> Estado::getTransiciones() {
+    return transiciones;
 }
 
 Estado* Estado::getSiguiente(char caracter) {
@@ -32,9 +26,25 @@ Estado* Estado::getSiguiente(char caracter) {
 }
 
 Estado:: Estado(bool aceptacion) {
-    
+    todoLeido = aceptacion;
 }
 
+void Estado::setTodoLeido(bool todoLeido) {
+    this->todoLeido = todoLeido;
+}
+    
 bool Estado::isTodoLeido() {
     return todoLeido;
+}
+
+bool Estado::isAceptacion() {
+    return aceptacion;
+}
+
+void Estado::setNombre(string nombre) {
+    this->nombre = nombre;
+}
+
+string Estado::getNombre() {
+    return nombre;
 }

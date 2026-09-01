@@ -8,9 +8,10 @@ using namespace std;
 
 class Estado {
     private:
-        vector<Transicion> transiciones; 
+        vector<Transicion> transiciones;
         bool aceptacion;
         bool todoLeido;
+        string nombre; 
 
     public:
         Estado();
@@ -19,6 +20,9 @@ class Estado {
         void agregarTransicion(Transicion* transicion);
         bool isAceptacion();
         bool isTodoLeido();
-        vector<Transicion*> getTransiciones();
+        void setNombre(string nombre);
+        string getNombre();
+        vector<Transicion> getTransiciones();
         Estado* getSiguiente(char caracter);
+        void setTodoLeido(bool todoLeido);
 };

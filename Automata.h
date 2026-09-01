@@ -17,4 +17,7 @@ public:
     void reiniciar();
     void avanzar(char caracter);
     Estado* getActual();
+    vector<Token> getTokens();
+    string tipoToken(string lexema);
+    string getLexema();
 };
