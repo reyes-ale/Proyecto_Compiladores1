@@ -25,18 +25,24 @@ void Automata::reiniciar(){//volver a q0
     if(estadoActual->isTodoLeido() && estadoActual!=nullptr){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
-        
-        Token token (lexema,tipoToken(lexema));
-        tokensitos.push_back(token);
+        if(estadoActual->isAceptacion() && estadoActual!=nullptr){
+            Token token (lexema,tipoToken(lexema));
+            tokensitos.push_back(token);
+        }
         lexema="";
         estadoActual = estadoInicial;
+        
     }
     else{
+        if(estadoActual!=nullptr){
+            estadoActual->setTodoLeido(true);
+        }
         lexema="";
         estadoActual = estadoInicial;
     }
-
-    estadoActual->setTodoLeido(false);
+    if(estadoActual!=nullptr){
+        estadoActual->setTodoLeido(false);
+    }
 }
 
 void Automata::avanzar(char caracter){
@@ -54,8 +60,10 @@ void Automata::avanzar(char caracter){
     if(esSimbolo(caracter)){ //fin
        
         if(estadoActual->isAceptacion() && estadoActual!=nullptr){
-            Token token(lexema, tipoToken(lexema));
-            tokensitos.push_back(token);
+            if(!(lexema.empty())){
+                Token token(lexema, tipoToken(lexema));
+                tokensitos.push_back(token);
+            }
             lexema = "";
         }
 
@@ -70,12 +78,16 @@ void Automata::avanzar(char caracter){
 
 
     lexema+=caracter;
-    Estado* siguiente = estadoActual->getSiguiente(caracter);
+    if(estadoActual!=nullptr){
+            Estado* siguiente = estadoActual->getSiguiente(caracter);
+            if(siguiente != nullptr){
+                 estadoActual = siguiente;
+            }
+
+    }
 
     
-    if(siguiente != nullptr){
-        estadoActual = siguiente;
-    }
+    
 }
 
 Estado* Automata::getActual(){
@@ -108,6 +120,19 @@ string Automata::tipoToken(string lexema){
     if(lexema == ",") return "coma";
     if(lexema == ":") return "dos_puntos";
     if(lexema == "=") return "asignacion";
+     if(lexema == "+") return "suma";
+    if(lexema == "-") return "resta";
+    if(lexema == "*") return "multiplicacion";
+    if(lexema == "/") return "division";
+    if(lexema == "(") return "paren_abre";
+    if(lexema == ")") return "paren_cierra";
+    if(lexema == "{") return "llave_abre";
+    if(lexema == "}") return "llave_cierra";
+    if(lexema == "[") return "corchete_abre";
+    if(lexema == "]") return "corchete_cierra";
+    if(lexema == "<") return "menor";
+    if(lexema == ">") return "mayor";
+    
 
     //simbolosnosesidividrunoporunooconunsoloregex
     return "ninguno";

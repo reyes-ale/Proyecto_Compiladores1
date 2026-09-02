@@ -3,7 +3,9 @@
 #include "Transicion.h"
 
 Estado::Estado() {
-
+    this->aceptacion = false;
+    this->todoLeido = false;
+    this->nombre = "";
 }
 
 void Estado::agregarTransicion(Transicion* transicion) {
@@ -26,7 +28,9 @@ Estado* Estado::getSiguiente(char caracter) {
 }
 
 Estado:: Estado(bool aceptacion) {
-    todoLeido = aceptacion;
+    this->aceptacion = aceptacion;
+    this->todoLeido = false;
+    this->nombre = "";
 }
 
 void Estado::setTodoLeido(bool todoLeido) {

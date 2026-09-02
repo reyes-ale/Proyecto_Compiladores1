@@ -12,25 +12,33 @@ int main(){
     Estado *q0 = new Estado(false);
     Estado *q1 = new Estado(true);//ide
     Estado *q2 = new Estado(true);//num
-    Estado *q3 = new Estado(true);//punto y coma
+    Estado *q3 = new Estado(true);//simb
 
 
     q0->setNombre("q0");
     q1->setNombre("q1");
     q2->setNombre("q2");
+    q3->setNombre("q3");
 
-
+    //transiciones q0 hacia ___ 
     Transicion letra(regex("[A-Za-z]"), q1);
     q0->agregarTransicion(&letra);
 
    Transicion numero(regex("[0-9]"), q2);
    q0->agregarTransicion(&numero);
 
-   Transicion letra2(regex("[A-Za-z0-9_]"), q1);
-   q1->agregarTransicion(&letra2);
+    Transicion simbolo(regex("[;=+\\-*/(){}[\\]:,!<>&|]"), q3);
+    q0->agregarTransicion(&simbolo);
 
-   Transicion puntocoma(regex("[;]"), q3);
-    q0->agregarTransicion(&puntocoma);
+
+    //transiciones q1 hacia ___ 
+
+   Transicion identificador(regex("[A-Za-z0-9_]"), q1);
+   q1->agregarTransicion(&identificador);
+
+    //transiciones q2 hacia__
+    Transicion digito(regex("[0-9]"), q2);
+    q2->agregarTransicion(&digito);
 
    cout<<"codigo: "<<codigo<<endl;
     Automata automata(q0); 
@@ -43,7 +51,9 @@ int main(){
         " lexema: " << automata.getLexema() << endl;
     }
 
-    automata.reiniciar();
+     if (!automata.getLexema().empty()) {
+        automata.reiniciar();
+    }
 
     cout<<"Tokens:"<<endl;
     for (Token token : automata.getTokens()) {
@@ -53,5 +63,6 @@ int main(){
      delete q0;
     delete q1;
     delete q2;
+    delete q3;
 
 }
