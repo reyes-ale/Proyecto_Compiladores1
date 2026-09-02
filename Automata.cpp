@@ -3,6 +3,7 @@
 #include "Estado.h"
 #include <iostream>
 #include <vector>
+#include <regex>
 using namespace std;
 
 Automata::Automata() {
@@ -24,11 +25,13 @@ void Automata::reiniciar(){//volver a q0
     if(estadoActual->isTodoLeido() && estadoActual!=nullptr){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
+        
         Token token (lexema,tipoToken(lexema));
         tokensitos.push_back(token);
         lexema="";
         estadoActual = estadoInicial;
-    }else{
+    }
+    else{
         lexema="";
         estadoActual = estadoInicial;
     }
@@ -47,27 +50,32 @@ void Automata::avanzar(char caracter){
         return;
 
     }  
-    
+
+    if(esSimbolo(caracter)){ //fin
+       
+        if(estadoActual->isAceptacion() && estadoActual!=nullptr){
+            Token token(lexema, tipoToken(lexema));
+            tokensitos.push_back(token);
+            lexema = "";
+        }
+
+        string str (1,caracter);
+        Token token(str, tipoToken(str));
+        tokensitos.push_back(token);
+
+        reiniciar();
+        return;
+
+    }  
+
+
     lexema+=caracter;
     Estado* siguiente = estadoActual->getSiguiente(caracter);
 
+    
     if(siguiente != nullptr){
         estadoActual = siguiente;
     }
-
-    /*if(isalpha(caracter)){
-        cout <<"escarac"<<endl;
-
-
-    }
-    else if(isdigit(caracter)){
-        cout<<"esnum"<<endl;
-    }
-    /*else if(caracter.match(regex("[+\-=!(),{}\[\];"))){
-
-    }
-    */
-
 }
 
 Estado* Automata::getActual(){
@@ -96,6 +104,11 @@ string Automata::tipoToken(string lexema){
         return "decimal";
     }
 
+    if(lexema == ";") return "punto_y_coma";
+    if(lexema == ",") return "coma";
+    if(lexema == ":") return "dos_puntos";
+    if(lexema == "=") return "asignacion";
+
     //simbolosnosesidividrunoporunooconunsoloregex
     return "ninguno";
 
@@ -108,4 +121,9 @@ string Automata::getLexema(){
 
 vector<Token> Automata::getTokens(){
     return tokensitos;
+}
+
+bool Automata::esSimbolo(char caracter){
+   string str(1,caracter);
+    return regex_match(str,regex("[;=+\\-*/(){}[\\]:,!<>&|]"));
 }

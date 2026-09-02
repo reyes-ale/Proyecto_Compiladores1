@@ -20,4 +20,5 @@ public:
     vector<Token> getTokens();
     string tipoToken(string lexema);
     string getLexema();
+    bool esSimbolo(char caracter);
 };

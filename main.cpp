@@ -8,10 +8,12 @@ using namespace std;
 
 int main(){
 
-    string codigo = "let temp = b;";
+    string codigo = "let temp = boli;";
     Estado *q0 = new Estado(false);
     Estado *q1 = new Estado(true);//ide
     Estado *q2 = new Estado(true);//num
+    Estado *q3 = new Estado(true);//punto y coma
+
 
     q0->setNombre("q0");
     q1->setNombre("q1");
@@ -27,11 +29,11 @@ int main(){
    Transicion letra2(regex("[A-Za-z0-9_]"), q1);
    q1->agregarTransicion(&letra2);
 
+   Transicion puntocoma(regex("[;]"), q3);
+    q0->agregarTransicion(&puntocoma);
+
    cout<<"codigo: "<<codigo<<endl;
     Automata automata(q0); 
-    automata.agregarEstados(q0);
-    automata.agregarEstados(q1);
-
 
 
     for (char caracter : codigo) {
