@@ -3,7 +3,7 @@
 #include "Diccionario.h"
 
 Diccionario::Diccionario(){
-    
+
         conjunto["let"] = "reservada";
         conjunto["fn"] = "reservada";
         conjunto["if"] = "reservada";
@@ -34,6 +34,10 @@ Diccionario::Diccionario(){
         conjunto["]"] = "corchete_cierra";
         conjunto["<"] = "menor";
         conjunto[">"] = "mayor";
+        conjunto["&&"] = "and";
+        conjunto["||"] = "or";
+
+
     
 
 }

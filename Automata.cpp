@@ -23,7 +23,7 @@ void Automata::agregarEstados(Estado* estado){
 }
 
 void Automata::reiniciar(){//volver a q0
-    if(estadoActual->isTodoLeido() && estadoActual!=nullptr){
+    if(estadoActual != nullptr && estadoActual->isTodoLeido()){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
         if(estadoActual->isAceptacion()){
@@ -48,39 +48,31 @@ void Automata::reiniciar(){//volver a q0
 
 void Automata::avanzar(char caracter){
     if(caracter==' ' || caracter=='\n' || caracter=='\t') { //fin
-        if(estadoActual->isAceptacion() && estadoActual!=nullptr){
+        if(estadoActual != nullptr && estadoActual->isAceptacion()){
             estadoActual->setTodoLeido(true); 
         }
         reiniciar();
         return;
     }  
 
-    if(esSimbolo(caracter)){ //fin
-       
-        if(estadoActual->isAceptacion() && estadoActual!=nullptr){
-            if(!(lexema.empty())){
-                Token token(lexema, tipoToken(lexema));
-                tokensitos.push_back(token);
-            }
-            lexema = "";
-        }
+    Estado* siguiente = estadoActual->getSiguiente(caracter);
 
-        string str (1,caracter);
-        Token token(str, tipoToken(str));
-        tokensitos.push_back(token);
+    if(siguiente == nullptr){
+        if (estadoActual != nullptr && estadoActual->isAceptacion()){
+            estadoActual->setTodoLeido(true);
+            reiniciar();
 
-        reiniciar();
-        return;
-
-    }  
-
-
-    lexema+=caracter;
-    if(estadoActual!=nullptr){
-            Estado* siguiente = estadoActual->getSiguiente(caracter);
+            siguiente = estadoActual->getSiguiente(caracter);
             if(siguiente != nullptr){
-                 estadoActual = siguiente;
+                estadoActual = siguiente;
+                lexema+=caracter;
             }
+            return;
+        }
+    }
+    if(siguiente != nullptr){
+            estadoActual = siguiente;
+            lexema+=caracter;
 
     }
 
@@ -113,11 +105,6 @@ string Automata::tipoToken(string lexema){
         return "decimal";
     }
 
-
-    
-
-
-    
     return "ninguno";
 
 }
@@ -131,7 +118,3 @@ vector<Token> Automata::getTokens(){
     return tokensitos;
 }
 
-bool Automata::esSimbolo(char caracter){
-   string str(1,caracter);
-    return regex_match(str,regex("[;=+\\-*/(){}[\\]:,!<>&|]"));
-}

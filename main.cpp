@@ -20,25 +20,30 @@ int main(){
     q2->setNombre("q2");
     q3->setNombre("q3");
 
-    //transiciones q0 hacia ___ 
+    //transiciones q0 hacia ___  
     Transicion letra(regex("[A-Za-z_]"), q1);
     q0->agregarTransicion(&letra);
 
-   Transicion numero(regex("[0-9]"), q2);
-   q0->agregarTransicion(&numero);
+    Transicion numero(regex("[0-9]"), q2);
+    q0->agregarTransicion(&numero);
 
     Transicion simbolo(regex("[;=+\\-*/(){}[\\]:,!<>&|]"), q3);
     q0->agregarTransicion(&simbolo);
 
+    //transiciones q0 hacia ___  
 
-    //transiciones q1 hacia ___ 
 
-   Transicion identificador(regex("[A-Za-z0-9_]"), q1);
-   q1->agregarTransicion(&identificador);
+    //transiciones q1 hacia ___  
+    Transicion identificador(regex("[A-Za-z0-9_]"), q1);
+    q1->agregarTransicion(&identificador);
+
+    //transiciones q1 hacia ___  
 
     //transiciones q2 hacia__
     Transicion digito(regex("[0-9]"), q2);
     q2->agregarTransicion(&digito);
+
+    //transiciones q2 hacia ___  
 
    cout<<"codigo: "<<codigo<<endl;
     Automata automata(q0); 
