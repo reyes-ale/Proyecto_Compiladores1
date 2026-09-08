@@ -8,7 +8,7 @@ using namespace std;
 
 int main(){
 
-    string codigo = "let temp = boli;";
+    string codigo = "peep_ if for else + - { } ppeper _2djvc";
     Estado *q0 = new Estado(false);
     Estado *q1 = new Estado(true);//ide
     Estado *q2 = new Estado(true);//num
@@ -21,7 +21,7 @@ int main(){
     q3->setNombre("q3");
 
     //transiciones q0 hacia ___ 
-    Transicion letra(regex("[A-Za-z]"), q1);
+    Transicion letra(regex("[A-Za-z_]"), q1);
     q0->agregarTransicion(&letra);
 
    Transicion numero(regex("[0-9]"), q2);
@@ -52,6 +52,7 @@ int main(){
     }
 
      if (!automata.getLexema().empty()) {
+        automata.getActual()->setTodoLeido(true);
         automata.reiniciar();
     }
 
@@ -60,7 +61,7 @@ int main(){
         cout<<"Token: "<< token.getValor() << " Tipo: " << token.getTipo() << endl;
     }
     
-     delete q0;
+    delete q0;
     delete q1;
     delete q2;
     delete q3;

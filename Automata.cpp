@@ -1,6 +1,7 @@
 #include "Automata.h"
 #include "Transicion.h"
 #include "Estado.h"
+#include "Diccionario.h"
 #include <iostream>
 #include <vector>
 #include <regex>
@@ -25,7 +26,7 @@ void Automata::reiniciar(){//volver a q0
     if(estadoActual->isTodoLeido() && estadoActual!=nullptr){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
-        if(estadoActual->isAceptacion() && estadoActual!=nullptr){
+        if(estadoActual->isAceptacion()){
             Token token (lexema,tipoToken(lexema));
             tokensitos.push_back(token);
         }
@@ -46,15 +47,12 @@ void Automata::reiniciar(){//volver a q0
 }
 
 void Automata::avanzar(char caracter){
-    if(caracter==' ' || caracter=='\n' || caracter=='\t'){ //fin
-       
+    if(caracter==' ' || caracter=='\n' || caracter=='\t') { //fin
         if(estadoActual->isAceptacion() && estadoActual!=nullptr){
             estadoActual->setTodoLeido(true); 
         }
-
         reiniciar();
         return;
-
     }  
 
     if(esSimbolo(caracter)){ //fin
@@ -96,12 +94,11 @@ Estado* Automata::getActual(){
 
 string Automata::tipoToken(string lexema){
 
-    if(lexema =="let" || lexema=="fn" || lexema=="if" || lexema=="else" || lexema=="while" || lexema=="return"){
-        return "reservada";
-    }
+    Diccionario reservadas;
+    string tipo_reservadas = reservadas.buscar(lexema);
 
-    if(lexema=="i32"|| lexema=="f64" || lexema=="bool" || lexema=="char" || lexema=="str"){
-        return "tipo";
+    if(!tipo_reservadas.empty()){
+        return tipo_reservadas; 
     }
 
     if(regex_match(lexema, regex("[a-zA-Z_][a-zA-Z0-9_]*"))){
@@ -116,25 +113,11 @@ string Automata::tipoToken(string lexema){
         return "decimal";
     }
 
-    if(lexema == ";") return "punto_y_coma";
-    if(lexema == ",") return "coma";
-    if(lexema == ":") return "dos_puntos";
-    if(lexema == "=") return "asignacion";
-     if(lexema == "+") return "suma";
-    if(lexema == "-") return "resta";
-    if(lexema == "*") return "multiplicacion";
-    if(lexema == "/") return "division";
-    if(lexema == "(") return "paren_abre";
-    if(lexema == ")") return "paren_cierra";
-    if(lexema == "{") return "llave_abre";
-    if(lexema == "}") return "llave_cierra";
-    if(lexema == "[") return "corchete_abre";
-    if(lexema == "]") return "corchete_cierra";
-    if(lexema == "<") return "menor";
-    if(lexema == ">") return "mayor";
+
     
 
-    //simbolosnosesidividrunoporunooconunsoloregex
+
+    
     return "ninguno";
 
 }
