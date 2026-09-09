@@ -70,6 +70,7 @@ void Automata::avanzar(char caracter){
             return;
         }
     }
+
     if(siguiente != nullptr){
             estadoActual = siguiente;
             lexema+=caracter;
@@ -103,6 +104,10 @@ string Automata::tipoToken(string lexema){
 
     if(regex_match(lexema, regex("[0-9]+\\.[0-9]+"))){
         return "decimal";
+    }
+
+    if(regex_match(lexema, regex("\"[^\"]*\""))){
+        return "cadena";
     }
 
     return "ninguno";

@@ -8,7 +8,7 @@ using namespace std;
 
 int main(){
 
-    string codigo = "peep_ if for else + - { } && & || | ppeper _2djvc";
+    string codigo = "peep_ if for else + - { } && & || | ppeper _2djvc \"peep\" ";
     Estado *q0 = new Estado(false);
     Estado *q1 = new Estado(true);//ide
     Estado *q2 = new Estado(true);//num
@@ -17,6 +17,8 @@ int main(){
     Estado *q5 = new Estado(true);//and2
     Estado *q6 = new Estado(false);//or1
     Estado *q7 = new Estado(true);//or2
+    Estado *q8 = new Estado(false);//comilla de string
+    Estado *q9 = new Estado(true);//cierra string
 
 
     q0->setNombre("q0");
@@ -27,6 +29,8 @@ int main(){
     q5->setNombre("q5");
     q6->setNombre("q6");
     q7->setNombre("q7");
+    q8->setNombre("q8");
+    q9->setNombre("q9");    
 
     //transiciones q0 hacia ___  
     Transicion letra(regex("[A-Za-z_]"), q1);
@@ -41,15 +45,11 @@ int main(){
     Transicion and1(regex("\\&"), q4);
     q0->agregarTransicion(&and1);
 
-    Transicion and2(regex("\\&"), q5);
-    q4->agregarTransicion(&and2);
-
     Transicion or1(regex("\\|"), q6);
     q0->agregarTransicion(&or1);
 
-    Transicion or2(regex("\\|"), q7);
-    q6->agregarTransicion(&or2);
-
+    Transicion comilla1(regex("\""), q8);
+    q0->agregarTransicion(&comilla1);
 
     //transiciones q0 hacia ___  
 
@@ -65,6 +65,29 @@ int main(){
     q2->agregarTransicion(&digito);
 
     //transiciones q2 hacia ___  
+
+
+    //trancisiones q4 hacia __
+    Transicion and2(regex("\\&"), q5);
+    q4->agregarTransicion(&and2);
+     //trancisiones q4 hacia __
+
+    //trancisiones q6 hacia __
+    Transicion or2(regex("\\|"), q7);
+    q6->agregarTransicion(&or2);
+    //trancisiones q6 hacia __
+
+    //transiciones q8 hacia__
+    Transicion contenido(regex("[A-Za-z0-9 &+\\-*/_=<>!{}()[\\]:,]"), q8);
+    q8->agregarTransicion(&contenido);
+
+    Transicion comilla2(regex("\""), q9);
+    q8->agregarTransicion(&comilla2);
+
+    //transiciones q8 hacia__
+
+     
+
 
 
    cout<<"codigo: "<<codigo<<endl;
