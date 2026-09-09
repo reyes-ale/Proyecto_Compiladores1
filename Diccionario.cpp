@@ -36,6 +36,7 @@ Diccionario::Diccionario(){
         conjunto[">"] = "mayor";
         conjunto["&&"] = "and";
         conjunto["||"] = "or";
+        
 
 
     
