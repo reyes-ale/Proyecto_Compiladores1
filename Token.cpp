@@ -1,11 +1,12 @@
 #include "Token.h"
+#include "Estado.h"
 
 Token::Token(){
     this->valor = "";
-    this->tipo = "";
+    this->tipo = Tipo::NINGUNO;
 }
 
-Token::Token(string valor, string tipo){
+Token::Token(string valor, Tipo tipo){
     this->valor = valor;
     this->tipo = tipo;
 }
@@ -14,6 +15,6 @@ string Token::getValor(){
     return valor;
 }
 
-string Token::getTipo(){
+Tipo Token::getTipo(){
     return tipo;
 }

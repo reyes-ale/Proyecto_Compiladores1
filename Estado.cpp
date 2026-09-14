@@ -4,8 +4,14 @@
 
 Estado::Estado() {
     this->aceptacion = false;
-    this->todoLeido = false;
     this->nombre = "";
+    this->tipo = Tipo::NINGUNO;
+}
+
+Estado::Estado(bool aceptacion, Tipo tipo) {
+    this->aceptacion = aceptacion;
+    this->nombre = "";
+    this->tipo = tipo;
 }
 
 void Estado::agregarTransicion(Transicion* transicion) {
@@ -27,19 +33,6 @@ Estado* Estado::getSiguiente(char caracter) {
     return nullptr;
 }
 
-Estado:: Estado(bool aceptacion) {
-    this->aceptacion = aceptacion;
-    this->todoLeido = false;
-    this->nombre = "";
-}
-
-void Estado::setTodoLeido(bool todoLeido) {
-    this->todoLeido = todoLeido;
-}
-    
-bool Estado::isTodoLeido() {
-    return todoLeido;
-}
 
 bool Estado::isAceptacion() {
     return aceptacion;
@@ -51,4 +44,8 @@ void Estado::setNombre(string nombre) {
 
 string Estado::getNombre() {
     return nombre;
+}
+
+Tipo Estado::getTipo() {
+    return tipo;
 }

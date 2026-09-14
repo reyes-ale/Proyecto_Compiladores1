@@ -1,14 +1,17 @@
 #include "Estado.h"
 #include "Token.h"
+#include "Diccionario.h"
 using namespace std;
 
 class Automata{
 private:
     Estado* estadoInicial;
     Estado* estadoActual;
-    vector<Estado> estados;
+    vector<Estado*> estados;
     vector<Token> tokensitos;
+    Diccionario reservadas;
     string lexema=""; 
+    vector<string> errores;
 
 public:
     Automata();
@@ -20,5 +23,8 @@ public:
     vector<Token> getTokens();
     string tipoToken(string lexema);
     string getLexema();
-    bool esSimbolo(char caracter);
+    Tipo tipoToken(string lexema, Estado* aceptacion);
+    void finalizar();
+    vector<string> getErrores();
+
 };

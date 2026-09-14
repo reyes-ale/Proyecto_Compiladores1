@@ -1,16 +1,17 @@
 #include <iostream>
+#include "Diccionario.h" 
 using namespace std;
 
 class Token {
     private:
         string valor;
-        string tipo;
+        Tipo tipo;
 
     public:
         Token();
-        Token(string valor, string tipo);
+        Token(string valor, Tipo tipo);
 
         string getValor();
-        string getTipo();
+        Tipo getTipo();
 
 };

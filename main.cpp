@@ -8,17 +8,17 @@ using namespace std;
 
 int main(){
 
-    string codigo = "peep_ if for else + - { } && & || | ppeper _2djvc \"peep\" ";
-    Estado *q0 = new Estado(false);
-    Estado *q1 = new Estado(true);//ide
-    Estado *q2 = new Estado(true);//num
-    Estado *q3 = new Estado(true);//simb
-    Estado *q4 = new Estado(false);//and1
-    Estado *q5 = new Estado(true);//and2
-    Estado *q6 = new Estado(false);//or1
-    Estado *q7 = new Estado(true);//or2
-    Estado *q8 = new Estado(false);//comilla de string
-    Estado *q9 = new Estado(true);//cierra string
+    string codigo = "peep_ if for else & + - { } && & || | ppeper _2djvc \"peep\" ";
+    Estado *q0 = new Estado(false, Tipo::NINGUNO);
+    Estado *q1 = new Estado(true,  Tipo::IDENTIFICADOR);//ide
+    Estado *q2 = new Estado(true,  Tipo::ENTERO);//num
+    Estado *q3 = new Estado(true,  Tipo::NINGUNO);//simb
+    Estado *q4 = new Estado(false, Tipo::NINGUNO);//and1
+    Estado *q5 = new Estado(true,  Tipo::NINGUNO);//and2
+    Estado *q6 = new Estado(false, Tipo::NINGUNO);//or1
+    Estado *q7 = new Estado(true,  Tipo::NINGUNO);//or2
+    Estado *q8 = new Estado(false, Tipo::NINGUNO);//comilla de string
+    Estado *q9 = new Estado(true,  Tipo::CADENA);//cierra string
 
 
     q0->setNombre("q0");
@@ -101,15 +101,12 @@ int main(){
         " lexema: " << automata.getLexema() << endl;
     }
 
-     if (!automata.getLexema().empty()) {
-        automata.getActual()->setTodoLeido(true);
-        automata.reiniciar();
-    }
+    automata.finalizar();
 
     cout<<"Tokens:"<<endl;
     for (Token token : automata.getTokens()) {
-        cout<<"Token: "<< token.getValor() << " Tipo: " << token.getTipo() << endl;
-    }
+        cout<<"Token: "<< token.getValor() << " Tipo: " << nombreTipo(token.getTipo()) << endl;  
+  }
     
     delete q0;
     delete q1;

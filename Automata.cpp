@@ -23,34 +23,21 @@ void Automata::agregarEstados(Estado* estado){
 }
 
 void Automata::reiniciar(){//volver a q0
-    if(estadoActual != nullptr && estadoActual->isTodoLeido()){
+    if(!lexema.empty()){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
-        if(estadoActual->isAceptacion()){
-            Token token (lexema,tipoToken(lexema));
+        if(estadoActual != nullptr && estadoActual->isAceptacion()){
+            Token token (lexema,tipoToken(lexema,estadoActual));
             tokensitos.push_back(token);
         }
         lexema="";
         estadoActual = estadoInicial;
         
     }
-    else{
-        if(estadoActual!=nullptr){
-            estadoActual->setTodoLeido(true);
-        }
-        lexema="";
-        estadoActual = estadoInicial;
-    }
-    if(estadoActual!=nullptr){
-        estadoActual->setTodoLeido(false);
-    }
 }
 
 void Automata::avanzar(char caracter){
     if(caracter==' ' || caracter=='\n' || caracter=='\t') { //fin
-        if(estadoActual != nullptr && estadoActual->isAceptacion()){
-            estadoActual->setTodoLeido(true); 
-        }
         reiniciar();
         return;
     }  
@@ -58,60 +45,28 @@ void Automata::avanzar(char caracter){
     Estado* siguiente = estadoActual->getSiguiente(caracter);
 
     if(siguiente == nullptr){
-        if (estadoActual != nullptr && estadoActual->isAceptacion()){
-            estadoActual->setTodoLeido(true);
+       
             reiniciar();
 
             siguiente = estadoActual->getSiguiente(caracter);
-            if(siguiente != nullptr){
-                estadoActual = siguiente;
-                lexema+=caracter;
+            if(siguiente == nullptr){
+                errores.push_back("desconocido: " + caracter);
+                return;
             }
-            return;
-        }
     }
 
-    if(siguiente != nullptr){
-            estadoActual = siguiente;
-            lexema+=caracter;
+    estadoActual = siguiente;
+    lexema+=caracter;
 
-    }
-
-    
-    
 }
 
 Estado* Automata::getActual(){
     return estadoActual;
 }
 
-string Automata::tipoToken(string lexema){
-
-    Diccionario reservadas;
-    string tipo_reservadas = reservadas.buscar(lexema);
-
-    if(!tipo_reservadas.empty()){
-        return tipo_reservadas; 
-    }
-
-    if(regex_match(lexema, regex("[a-zA-Z_][a-zA-Z0-9_]*"))){
-        return "identificador";
-    }
-
-    if(regex_match(lexema, regex("[0-9]+"))){
-        return "numero";
-    }
-
-    if(regex_match(lexema, regex("[0-9]+\\.[0-9]+"))){
-        return "decimal";
-    }
-
-    if(regex_match(lexema, regex("\"[^\"]*\""))){
-        return "cadena";
-    }
-
-    return "ninguno";
-
+void Automata:: finalizar(){
+    reiniciar();
+    tokensitos.push_back(Token("EOF", Tipo::NINGUNO));// fin si es archv
 }
 
 
@@ -122,4 +77,17 @@ string Automata::getLexema(){
 vector<Token> Automata::getTokens(){
     return tokensitos;
 }
+
+vector<string> Automata::getErrores(){
+    return errores;
+}
+
+Tipo Automata::tipoToken(string lexema, Estado* aceptacion){
+    Tipo enTabla = reservadas.buscar(lexema);
+    if(enTabla != Tipo::NINGUNO){
+        return enTabla;
+    } 
+    return aceptacion->getTipo();
+}
+
 
