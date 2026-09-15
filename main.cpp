@@ -38,6 +38,9 @@ int main(int argc, char* argv[]){
     Estado *q9 = new Estado(true,  Tipo::CADENA);//cierra string
     Estado *q10 = new Estado(true, Tipo::NINGUNO); //1 pleca 
     Estado *q11 = new Estado(true, Tipo::COMENTARIO); //2 pleca comment
+    Estado *q12 = new Estado(false, Tipo::NINGUNO); //flecha1
+    Estado *q13 = new Estado(true, Tipo::FLECHA); //flecha2
+
 
 
     q0->setNombre("q0");
@@ -52,6 +55,8 @@ int main(int argc, char* argv[]){
     q9->setNombre("q9");    
     q10->setNombre("q10");
     q11->setNombre("q11");
+    q12->setNombre("q12");
+    q13->setNombre("q13");
 
     //transiciones q0 hacia ___  
     Transicion letra(regex("[A-Za-z_]"), q1);
@@ -60,7 +65,7 @@ int main(int argc, char* argv[]){
     Transicion numero(regex("[0-9]"), q2);
     q0->agregarTransicion(&numero);
 
-    Transicion simbolo(regex("[;+*(){}[\\]:,]"), q3);
+    Transicion simbolo(regex("[;+*(){}[\\]:,=]"), q3);
     q0->agregarTransicion(&simbolo);
 
     Transicion and1(regex("\\&"), q4);
@@ -77,6 +82,11 @@ int main(int argc, char* argv[]){
 
     Transicion barra(regex("/"), q10);
     q0->agregarTransicion(&barra);
+
+    Transicion flecha1(regex("-"), q12);
+    q0->agregarTransicion(&flecha1);
+
+
 
     //transiciones q0 hacia ___  
 
@@ -129,6 +139,12 @@ int main(int argc, char* argv[]){
 
     //transiciones q11 hacia__
 
+
+    //trancisiones q12 hacia__  
+    Transicion flecha2(regex(">"), q13);
+    q12->agregarTransicion(&flecha2);
+
+    //trancisiones q12 hacia__  
 
 
 

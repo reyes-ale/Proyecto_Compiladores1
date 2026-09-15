@@ -33,14 +33,14 @@ Diccionario::Diccionario(){
     conjunto["*"] = Tipo::POR;
     conjunto["/"] = Tipo::ENTRE;
     conjunto["="]  = Tipo::ASIGNACION;
-    conjunto["=="] = Tipo::IGUAL_IGUAL;
+   // conjunto["=="] = Tipo::IGUAL_IGUAL;
     conjunto["!"]  = Tipo::NOT;
-    conjunto["!="] = Tipo::DISTINTO;
+    //conjunto["!="] = Tipo::DISTINTO;
     conjunto["<"]  = Tipo::MENOR;
-    conjunto["<="] = Tipo::MENOR_IGUAL;
+    //conjunto["<="] = Tipo::MENOR_IGUAL;
     conjunto[">"]  = Tipo::MAYOR;
-    conjunto[">="] = Tipo::MAYOR_IGUAL;
-    conjunto["->"] = Tipo::FLECHA;
+    //conjunto[">="] = Tipo::MAYOR_IGUAL;
+   conjunto["->"] = Tipo::FLECHA;
 
     conjunto["&&"] = Tipo::AND;
     conjunto["||"] = Tipo::OR;
