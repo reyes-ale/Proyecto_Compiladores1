@@ -26,38 +26,42 @@ void Automata::reiniciar(){//volver a q0
     if(!lexema.empty()){
         //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
         //tokensitos.add(nuevo);
-        if(estadoActual != nullptr && estadoActual->isAceptacion()){
-            Token token (lexema,tipoToken(lexema,estadoActual));
-            tokensitos.push_back(token);
+         if(estadoActual != nullptr && estadoActual->isAceptacion()){
+            Tipo tipo = tipoToken(lexema, estadoActual);
+            if(tipo != Tipo::COMENTARIO){
+                Token token (lexema,tipo);
+                tokensitos.push_back(token);
+            }
+            }
+            else{
+                errores.push_back("error " + lexema);
         }
         lexema="";
         estadoActual = estadoInicial;
         
     }
+
+   
 }
 
 void Automata::avanzar(char caracter){
-    if(caracter==' ' || caracter=='\n' || caracter=='\t') { //fin
-        reiniciar();
-        return;
-    }  
+    Transicion* transicion = estadoActual->getTransicion(caracter);
 
-    Estado* siguiente = estadoActual->getSiguiente(caracter);
-
-    if(siguiente == nullptr){
+    if(transicion == nullptr){
        
             reiniciar();
 
-            siguiente = estadoActual->getSiguiente(caracter);
-            if(siguiente == nullptr){
+            transicion = estadoActual->getTransicion(caracter);
+            if(transicion == nullptr){
                 errores.push_back("desconocido: " + caracter);
                 return;
             }
     }
 
-    estadoActual = siguiente;
-    lexema+=caracter;
-
+    estadoActual = transicion->getSiguiente();
+    if(!transicion->isDescarta()) {
+        lexema+=caracter;
+    }
 }
 
 Estado* Automata::getActual(){
@@ -66,7 +70,7 @@ Estado* Automata::getActual(){
 
 void Automata:: finalizar(){
     reiniciar();
-    tokensitos.push_back(Token("EOF", Tipo::NINGUNO));// fin si es archv
+        tokensitos.push_back(Token("$", Tipo::FIN_ARCHIVO));// fin de archv
 }
 
 

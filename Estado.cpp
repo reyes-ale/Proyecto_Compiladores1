@@ -49,3 +49,12 @@ string Estado::getNombre() {
 Tipo Estado::getTipo() {
     return tipo;
 }
+
+Transicion* Estado:: getTransicion(char caracter) {
+    for (Transicion& transicion : transiciones) {
+        if (transicion.acepta(caracter)) {
+            return &transicion;
+        }
+    }
+    return nullptr;
+}

@@ -28,4 +28,5 @@ class Estado {
         Estado* getSiguiente(char caracter);
         void setTodoLeido(bool todoLeido);
         Tipo getTipo();
+        Transicion* getTransicion(char caracter);
 };

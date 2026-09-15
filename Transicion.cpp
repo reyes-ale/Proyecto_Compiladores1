@@ -7,6 +7,12 @@ Transicion::Transicion(regex patron, Estado* siguiente) {
     this->siguiente = siguiente;
 }
 
+Transicion::Transicion(regex patron, Estado* siguiente, bool descarta) {
+    this->patron = patron;
+    this->siguiente = siguiente;
+    this->descarta = descarta;
+}
+
 bool Transicion::acepta(char caracter) {
     string str(1, caracter);
     bool match = regex_match(str, patron);
@@ -16,4 +22,8 @@ bool Transicion::acepta(char caracter) {
 
 Estado* Transicion::getSiguiente() {
     return siguiente;
+}
+
+bool Transicion::isDescarta(){
+    return descarta;
 }
