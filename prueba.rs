@@ -6,7 +6,7 @@ fn suma(a: i32, b: i32) {
 fn main() {
     let x = 10;
     let y = 20;
-    let mensaje = "resultado de la suma";
+    let mensaje = "resultado de la suma";  //comm
 
     if x < y {
         let resultado = suma(x, y);

@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
     Transicion numero(regex("[0-9]"), q2);
     q0->agregarTransicion(&numero);
 
-    Transicion simbolo(regex("[;=+\\-*(){}[\\]:,!<>]"), q3);
+    Transicion simbolo(regex("[;+*(){}[\\]:,]"), q3);
     q0->agregarTransicion(&simbolo);
 
     Transicion and1(regex("\\&"), q4);

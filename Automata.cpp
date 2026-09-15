@@ -32,9 +32,9 @@ void Automata::reiniciar(){//volver a q0
                 Token token (lexema,tipo);
                 tokensitos.push_back(token);
             }
-            }
             else{
                 errores.push_back("error " + lexema);
+            }
         }
         lexema="";
         estadoActual = estadoInicial;
