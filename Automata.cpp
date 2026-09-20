@@ -29,11 +29,12 @@ void Automata::reiniciar(){//volver a q0
          if(estadoActual != nullptr && estadoActual->isAceptacion()){
             Tipo tipo = tipoToken(lexema, estadoActual);
             if(tipo==Tipo::RANGO_FOR && lexema.size()>2){
-                tokensitos.push_back(Token(lexema.substr(0, lexema.size()-2), Tipo::ENTERO));
-                tokensitos.push_back(Token("..", Tipo::RANGO_FOR));
+                tokensitos.push_back(Token(lexema.substr(0, lexema.size()-2), Tipo::ENTERO, lineaInicio, colInicio));
+                tokensitos.push_back(Token("..", Tipo::RANGO_FOR, lineaInicio, colInicio + (int)lexema.size() - 2));
+
             }
             else if(tipo != Tipo::COMENTARIO){
-                Token token (lexema,tipo);
+                Token token (lexema,tipo,lineaInicio, colInicio);
                 tokensitos.push_back(token);
             }
             else{
@@ -58,14 +59,21 @@ void Automata::avanzar(char caracter){
             transicion = estadoActual->getTransicion(caracter);
             if(transicion == nullptr){
                 errores.push_back("desconocido: " + caracter);
+                moverPos(caracter);
                 return;
             }
     }
 
     estadoActual = transicion->getSiguiente();
     if(!transicion->isDescarta()) {
-        lexema+=caracter;
+        if(lexema.empty()){
+            lineaInicio = linea;
+            colInicio = columna;
+        }
+         lexema+=caracter;
     }
+    moverPos(caracter);
+   
 }
 
 Estado* Automata::getActual(){
@@ -74,7 +82,7 @@ Estado* Automata::getActual(){
 
 void Automata:: finalizar(){
     reiniciar();
-        tokensitos.push_back(Token("$", Tipo::FIN_ARCHIVO));// fin de archv
+        tokensitos.push_back(Token("$", Tipo::FIN_ARCHIVO,linea, columna));// fin de archv
 }
 
 
@@ -96,6 +104,16 @@ Tipo Automata::tipoToken(string lexema, Estado* aceptacion){
         return enTabla;
     } 
     return aceptacion->getTipo();
+}
+
+void Automata::moverPos(char caracter){
+    if(caracter == '\n'){
+        linea++;
+        columna=1;
+    }
+    else{
+        columna++;
+    }
 }
 
 

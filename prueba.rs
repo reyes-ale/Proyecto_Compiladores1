@@ -10,4 +10,8 @@ fn main() {
 	} else {
 		return;
 	}
+	for i in 0..10 {
+		x=i;
+	}
+
 }

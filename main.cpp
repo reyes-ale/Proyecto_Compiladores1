@@ -295,7 +295,8 @@ int main(int argc, char* argv[]){
 
     cout<<"Tokens:"<<endl;
     for (Token token : automata.getTokens()) {
-        cout<<"Token: "<< token.getValor() << " Tipo: " << nombreTipo(token.getTipo()) << endl;  
+        cout << "Token: " << token.getValor() << " Tipo: " << nombreTipo(token.getTipo())
+     << " (" << token.getLinea() << ":" << token.getColumna() << ")" << endl;
   }
     
     delete q0;

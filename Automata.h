@@ -12,6 +12,12 @@ private:
     Diccionario reservadas;
     string lexema=""; 
     vector<string> errores;
+    int linea=1;
+    int columna=1;
+    int lineaInicio=1;
+    int colInicio=1;
+    
+
 
 public:
     Automata();
@@ -26,5 +32,7 @@ public:
     Tipo tipoToken(string lexema, Estado* aceptacion);
     void finalizar();
     vector<string> getErrores();
+    void moverPos(char caracter);
+    
 
 };

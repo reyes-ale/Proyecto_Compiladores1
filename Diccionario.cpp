@@ -105,6 +105,11 @@ string nombreTipo(Tipo tipo){
         case Tipo::CORCHETE_CIERRA: return "CORCHETE_CIERRA";
         case Tipo::COMENTARIO:      return "COMENTARIO";
         case Tipo::FIN_ARCHIVO:     return "FIN_ARCHIVO";
+        case Tipo::IN:              return "IN";
+        case Tipo::VERDADERO:       return "VERDADERO";
+        case Tipo::FALSO:           return "FALSO";
+        case Tipo::RANGO_FOR:       return "RANGO_FOR";
+        case Tipo::CARACTER:        return "CARACTER";
     }
     return "NOIDEF";
 }
