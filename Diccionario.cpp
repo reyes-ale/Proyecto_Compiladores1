@@ -11,6 +11,10 @@ Diccionario::Diccionario(){
     conjunto["while"]  = Tipo::WHILE;
     conjunto["return"] = Tipo::RETURN;
     conjunto["for"]    = Tipo::FOR;
+    conjunto["in"]    = Tipo::IN;
+    conjunto["true"]  = Tipo::VERDADERO;
+    conjunto["false"] = Tipo::FALSO;
+    
 
     conjunto["i32"]  = Tipo::TIPO;
     conjunto["f64"]  = Tipo::TIPO;
@@ -33,17 +37,18 @@ Diccionario::Diccionario(){
     conjunto["*"] = Tipo::POR;
     conjunto["/"] = Tipo::ENTRE;
     conjunto["="]  = Tipo::ASIGNACION;
-   // conjunto["=="] = Tipo::IGUAL_IGUAL;
+    conjunto["=="] = Tipo::IGUAL_IGUAL;
     conjunto["!"]  = Tipo::NOT;
-    //conjunto["!="] = Tipo::DISTINTO;
+    conjunto["!="] = Tipo::DISTINTO;
     conjunto["<"]  = Tipo::MENOR;
-    //conjunto["<="] = Tipo::MENOR_IGUAL;
+    conjunto["<="] = Tipo::MENOR_IGUAL;
     conjunto[">"]  = Tipo::MAYOR;
-    //conjunto[">="] = Tipo::MAYOR_IGUAL;
+    conjunto[">="] = Tipo::MAYOR_IGUAL;
    conjunto["->"] = Tipo::FLECHA;
 
     conjunto["&&"] = Tipo::AND;
     conjunto["||"] = Tipo::OR;
+    conjunto[".."] = Tipo::RANGO_FOR;
     
 
 }

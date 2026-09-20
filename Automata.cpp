@@ -28,7 +28,11 @@ void Automata::reiniciar(){//volver a q0
         //tokensitos.add(nuevo);
          if(estadoActual != nullptr && estadoActual->isAceptacion()){
             Tipo tipo = tipoToken(lexema, estadoActual);
-            if(tipo != Tipo::COMENTARIO){
+            if(tipo==Tipo::RANGO_FOR && lexema.size()>2){
+                tokensitos.push_back(Token(lexema.substr(0, lexema.size()-2), Tipo::ENTERO));
+                tokensitos.push_back(Token("..", Tipo::RANGO_FOR));
+            }
+            else if(tipo != Tipo::COMENTARIO){
                 Token token (lexema,tipo);
                 tokensitos.push_back(token);
             }
