@@ -1,4 +1,3 @@
-#include "Parser.h"
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -14,5 +13,6 @@ class Parser {
         Parser();
         Parser(vector<Token> t);
         int getActual();
+        void siguiente();
         
 };
