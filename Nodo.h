@@ -17,8 +17,14 @@ enum class Tipo{
 
 
 class Nodo {
+    
+private:
     Tipo tipo;
     string valor;
     vector<Nodo*> hijos;
+
+public:
+    Nodo(string val, Tipo tipo);
+
         
 };

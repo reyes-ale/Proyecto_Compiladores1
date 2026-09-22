@@ -14,5 +14,7 @@ class Parser {
         Parser(vector<Token> t);
         int getActual();
         void siguiente();
+        Token actual();
+        Token siguiente();
         
 };
