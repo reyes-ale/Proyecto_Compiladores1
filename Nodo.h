@@ -4,27 +4,44 @@
 #include "Token.h"
 using namespace std;
 
-//Mismos datos que el diccionario
 
-enum class Tipo{
-    NINGUNO,
-    IDENTIFICADOR,ENTERO,DECIMAL,CADENA,
-    LET,FN,IF,ELSE,WHILE,FOR,RETURN,TIPO,
-    MAS,MENOS,POR,ENTRE,ASIGNACION,IGUAL_IGUAL,DISTINTO,MENOR,MAYOR,MENOR_IGUAL,MAYOR_IGUAL,AND,OR,NOT,
-    PUNTO_COMA,COMA,PARENTESIS_ABRE,PARENTESIS_CIERRA,LLAVE_ABRE,LLAVE_CIERRA,CORCHETE_ABRE,CORCHETE_CIERRA,
-    COMENTARIO,FLECHA,DOS_PUNTOS,FIN_ARCHIVO,IN,VERDADERO,FALSO,RANGO_FOR, CARACTER
+enum class TipoN{
+    PROGRAMA,
+    FUNCION,
+    PARAMETRO,
+    DECLARACION,
+    ASIGNACION,
+    CONDICION,
+    BUCLE_WHILE,
+    BUCLE_FOR,
+    RANGO,
+    RETORNO,
+    BINARIA,       
+    UNARIA,        
+    LLAMADA,       
+ 
+    IDENTIFICADOR,
+    ENTERO,
+    DECIMAL,
+    CADENA,
+    CARACTER,
+    BOOLEANO
 };
 
 
 class Nodo {
     
 private:
-    Tipo tipo;
+    TipoN tipo;
     string valor;
-    vector<Nodo*> hijos;
+    vector<Nodo*> hijitos;
 
 public:
-    Nodo(string val, Tipo tipo);
+    Nodo(string valor, TipoN tipo);
+    void agregarHijito(Nodo* hijito);
+    TipoN getTipo();
+    string getValor();
+    vector<Nodo*> getHijitos();
+    ~Nodo();
 
-        
 };
