@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Estado.h"
 #include "Token.h"
 #include "Diccionario.h"

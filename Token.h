@@ -1,5 +1,7 @@
+#pragma once
+
 #include <iostream>
-#include "Diccionario.h" 
+#include "Diccionario.h"
 using namespace std;
 
 class Token {
