@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <regex>
+#include <string>
 using namespace std;
 
 Automata::Automata() {
@@ -24,8 +25,6 @@ void Automata::agregarEstados(Estado* estado){
 
 void Automata::reiniciar(){//volver a q0
     if(!lexema.empty()){
-        //Token nuevo = new Token (lexema, tipodeTokenquesevaasacardelamulelistadetiposdetokensquehayoesocreemospormientrasporloquedespueslopensaremosmejor)
-        //tokensitos.add(nuevo);
          if(estadoActual != nullptr && estadoActual->isAceptacion()){
             Tipo tipo = tipoToken(lexema, estadoActual);
             if(tipo==Tipo::RANGO_FOR && lexema.size()>2){
@@ -37,16 +36,18 @@ void Automata::reiniciar(){//volver a q0
                 Token token (lexema,tipo,lineaInicio, colInicio);
                 tokensitos.push_back(token);
             }
-            else{
-                errores.push_back("error " + lexema);
-            }
+            // los comentarios se descartan: no son token ni error
+        }
+        else{
+            errores.push_back("Error lexico: lexema invalido '" + lexema + "' en linea "
+                + to_string(lineaInicio) + " columna " + to_string(colInicio));
         }
         lexema="";
         estadoActual = estadoInicial;
-        
+
     }
 
-   
+
 }
 
 void Automata::avanzar(char caracter){
@@ -58,7 +59,8 @@ void Automata::avanzar(char caracter){
 
             transicion = estadoActual->getTransicion(caracter);
             if(transicion == nullptr){
-                errores.push_back("desconocido: " + caracter);
+                errores.push_back("Error lexico: caracter no reconocido '" + string(1, caracter)
+                    + "' en linea " + to_string(linea) + " columna " + to_string(columna));
                 moverPos(caracter);
                 return;
             }

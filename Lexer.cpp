@@ -29,7 +29,7 @@ void Lexer::construirAutomata() {
     Estado *q9 = new Estado(true,  Tipo::CADENA);//cierra string
     Estado *q10 = new Estado(true, Tipo::NINGUNO); //1 pleca
     Estado *q11 = new Estado(true, Tipo::COMENTARIO); //2 pleca comment
-    Estado *q12 = new Estado(false, Tipo::NINGUNO); //flecha1
+    Estado *q12 = new Estado(true, Tipo::MENOS); //flecha1 / menos solo
     Estado *q13 = new Estado(true, Tipo::FLECHA); //flecha2
     Estado *q14 = new Estado(true, Tipo::MENOR);        //
     Estado *q15 = new Estado(true, Tipo::MENOR_IGUAL);  // <=
