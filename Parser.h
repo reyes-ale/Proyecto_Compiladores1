@@ -18,7 +18,7 @@ class Parser {
         Token& siguiente();
         bool coincide(Tipo tipoEsperado);
         Token consumir(Tipo tipoEsperado);
-        void error();
+        void error(string mensaje);
 
         //Métodos para ir derivadndo
         Nodo* parsear();

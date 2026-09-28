@@ -27,7 +27,14 @@ Token Parser::consumir(Tipo tipoEsperado) {
         avanzar();
         return t;
     }
-    return actual();
+    cerr << "Error sintactico: se esperaba "
+         << nombreTipo(tipoEsperado)
+         << " pero se encontro "
+         << nombreTipo(actual().getTipo())
+         << " en línea: "
+         << actual().getLinea()
+         << endl;
+    exit(1);
 }
 
 // Derivaciones
@@ -53,7 +60,8 @@ Nodo* Parser::parseElemento() {
     } else if (coincide(Tipo::FN)) {
         return parseFuncion();
     } else {
-        error();
+        error("Inicio de elemento no reconocido en línea: " + to_string(actual().getLinea())
+                + "\nSe encontró: " + actual().getValor());
         return nullptr; 
 
 }
@@ -65,7 +73,7 @@ Nodo* Parser::parseFuncion() {
     consumir(Tipo::PARENTESIS_ABRE);
     vector<Nodo*> parametros = parseParametros();
     consumir(Tipo::PARENTESIS_CIERRA);
-    consumir(Tipo::DOS_PUNTOS);
+    consumir(Tipo::FLECHA);
     string tipoRetorno = parseTipo();
     Nodo* cuerpo = parseCuerpo();
 
@@ -143,7 +151,9 @@ Nodo* Parser::parseSentencia() {
     } else if (coincide(Tipo::RETURN)) {
         return parseRetorno();
     } else {
-        error();
+        error("Sentencia no reconocida en línea: " + to_string(actual().getLinea())
+                + "\nSe encontró: " + actual().getValor());
+        
         return nullptr; // Manejar error o sentencia no reconocida
     }
 }
@@ -408,7 +418,8 @@ Nodo* Parser::parseFactor() {
         return expresionNodo;
     } else {
         // Manejar error o caso no reconocido
-        error();
+        error("Factor no reconocido en línea: " + to_string(actual().getLinea())
+                + "\nSe encontró: " + actual().getValor());
         return nullptr;
     }
 }
@@ -432,7 +443,7 @@ vector<Nodo*> Parser::parseArgumentos() {
     return argumentos;
 }
 
-void Parser::error() {
-    cerr << "Error sintactico: " << endl;
+void Parser::error(string mensaje) {
+    cerr << "Error sintactico: " << mensaje << endl;
     exit(1);
 }

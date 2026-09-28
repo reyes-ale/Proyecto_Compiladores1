@@ -25,9 +25,10 @@ enum class TipoN{
     DECIMAL,
     CADENA,
     CARACTER,
-    BOOLEANO
+    BOOLEANO,
+    FIN_ARCHIVO
 };
-
+string nombreTipo (Tipo tipo);
 
 class Nodo {
     
