@@ -1,6 +1,17 @@
 #include <iostream>
 #include "Lexer.h"
+#include "Parser.h"
 using namespace std;
+
+void traverse(Nodo* node, int depth = 0) {
+    for (int i = 0; i < depth; ++i) {
+        cout << "  "; // Indentación
+    }
+    cout << node->getValor() << " (" << static_cast<int>(node->getTipo()) << ")" << endl;
+    for (Nodo* child : node->getHijitos()) {
+        traverse(child, depth + 1);
+    }
+}
 
 int main(int argc, char* argv[]){
 
@@ -41,6 +52,15 @@ int main(int argc, char* argv[]){
             cout << error << endl;
         }
     }
+    if (errores.size()>0){
+        cout << "Se encontraron errores lexicos, no se puede continuar con el analisis sintactico" << endl;
+        return 1;
+    }
 
+    Parser parser(lexer.getTokens());
+    Nodo* arbol = parser.parsear();
+    traverse(arbol);
     return 0;
 }
+
+
