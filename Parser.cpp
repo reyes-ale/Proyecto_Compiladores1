@@ -81,6 +81,7 @@ Nodo* Parser::parseFuncion() {
     consumir(Tipo::PARENTESIS_CIERRA);
 
     string tipoRetorno = "void";
+    
     if (coincide(Tipo::FLECHA)) {
         consumir(Tipo::FLECHA);
         tipoRetorno = parseTipo();
@@ -101,6 +102,8 @@ Nodo* Parser::parseFuncion() {
         funcionNodo->agregarHijito(parametro);
     }
     funcionNodo->agregarHijito(cuerpo);
+    tabla.insertar(idToken.getValor(), tipoRetorno);
+
     return funcionNodo;
 }
 
@@ -130,6 +133,7 @@ Nodo* Parser::parseParametro() {
 
     Nodo* parametroNodo = new Nodo(idToken.getValor(), TipoN::PARAMETRO);
     parametroNodo->agregarHijito(new Nodo(tipo, TipoN::IDENTIFICADOR));
+    tabla.insertar(idToken.getValor(), tipo);
     return parametroNodo;
 }
 
@@ -194,6 +198,7 @@ Nodo* Parser::parseDeclaracion() {
     } else {
         declaracionNodo->agregarHijito(new Nodo("error", TipoN::IDENTIFICADOR));
     }
+    tabla.insertar(idToken.getValor(), "");
     return declaracionNodo;
 }
 
@@ -311,6 +316,7 @@ Nodo* Parser::parsePara() {
     Nodo* forNodo = new Nodo(idToken.getValor(), TipoN::BUCLE_FOR);
     if (rangoNodo != nullptr) forNodo->agregarHijito(rangoNodo);
     forNodo->agregarHijito(cuerpoNodo);
+    tabla.insertar(idToken.getValor(), "");
     return forNodo;
 }
 
@@ -574,4 +580,8 @@ void Parser::sincronizar(){
         avanzar();
 
     }
+}
+
+TablaSimbolos& Parser::getTabla() {
+    return tabla;
 }

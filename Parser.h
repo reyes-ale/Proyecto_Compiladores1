@@ -4,6 +4,7 @@
 #include <vector>
 #include "Nodo.h"
 #include "Error.h"
+#include "TablaSimbolos.h"
 using namespace std;
 
 class Parser {
@@ -11,6 +12,7 @@ class Parser {
         vector<Token> tokens;
         int TokenActual = 0;
         vector<Error>& errores;
+        TablaSimbolos tabla;
 
     public:
         Parser(const vector<Token>& tokens, vector<Error>& errores);
@@ -49,4 +51,5 @@ class Parser {
         Nodo* parseFactor();
         vector<Nodo*> parseArgumentos();
         void sincronizar();
+        TablaSimbolos& getTabla();
 };

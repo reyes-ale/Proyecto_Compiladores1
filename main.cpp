@@ -80,6 +80,8 @@ int main(int argc, char* argv[]){
     cout << "\nArbol sintactico:" << endl;
     traverse(arbol);
 
+    parser.getTabla().imprimir();
+
     delete arbol;
     return 0;
 }
