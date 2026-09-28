@@ -27,6 +27,7 @@ Nodo::~Nodo() {
 string nombreTipo(TipoN tipo){
     switch(tipo){
         case TipoN::PROGRAMA: return "PROGRAMA";
+        case TipoN::BLOQUE: return "BLOQUE";
         case TipoN::FUNCION: return "FUNCION";
         case TipoN::PARAMETRO: return "PARAMETRO";
         case TipoN::DECLARACION: return "DECLARACION";
