@@ -13,4 +13,5 @@ public:
     void insertar(string nombre, string tipo = "");
     void imprimir();
     int size();
+    void actualizarTipo(string nombre,string tipo);
 };

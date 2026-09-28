@@ -27,3 +27,20 @@ void TablaSimbolos::imprimir() {
 int TablaSimbolos::size() {
     return simbolos.size();
 }
+
+void TablaSimbolos::actualizarTipo(string nombre, string tipo) {
+      for (int i = simbolos.size() - 1; i >= 0; i--) {
+        if (simbolos[i].getNombre() == nombre && simbolos[i].getTipo().empty()) {
+            simbolos[i].setTipo(tipo);
+            return;
+        }
+    }
+
+     for (int i = simbolos.size() - 1; i >= 0; i--) {
+        if (simbolos[i].getNombre() == nombre) {
+            simbolos[i].setTipo(tipo);
+            return;
+        }
+    }
+}
+

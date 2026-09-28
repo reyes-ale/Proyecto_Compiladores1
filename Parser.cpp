@@ -71,6 +71,8 @@ Nodo* Parser::parseFuncion() {
     consumir(Tipo::FN);
     Token idToken = consumir(Tipo::IDENTIFICADOR);
 
+    tabla.insertar(idToken.getValor(), "");
+
     if (!coincide(Tipo::PARENTESIS_ABRE)) {
         error("se esperaba ( despues del nombre de la funcion");
         sincronizar();
@@ -80,12 +82,13 @@ Nodo* Parser::parseFuncion() {
     vector<Nodo*> parametros = parseParametros();
     consumir(Tipo::PARENTESIS_CIERRA);
 
-    string tipoRetorno = "void";
-    
+    string tipoRetorno = "";
     if (coincide(Tipo::FLECHA)) {
         consumir(Tipo::FLECHA);
         tipoRetorno = parseTipo();
     }
+
+    tabla.actualizarTipo(idToken.getValor(), tipoRetorno);
 
     if (!coincide(Tipo::LLAVE_ABRE)) {
         error("se esperaba { para el cuerpo de la funcion");
@@ -97,13 +100,13 @@ Nodo* Parser::parseFuncion() {
     consumir(Tipo::LLAVE_CIERRA);
 
     Nodo* funcionNodo = new Nodo(idToken.getValor(), TipoN::FUNCION);
-    funcionNodo->agregarHijito(new Nodo(tipoRetorno, TipoN::IDENTIFICADOR));
+    if (!tipoRetorno.empty()) {
+        funcionNodo->agregarHijito(new Nodo(tipoRetorno, TipoN::IDENTIFICADOR));
+    }
     for (Nodo* parametro : parametros) {
         funcionNodo->agregarHijito(parametro);
     }
     funcionNodo->agregarHijito(cuerpo);
-    tabla.insertar(idToken.getValor(), tipoRetorno);
-
     return funcionNodo;
 }
 

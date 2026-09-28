@@ -4,14 +4,34 @@
 #include "Error.h"
 using namespace std;
 
-void traverse(Nodo* node, int depth = 0) {
+void traverse(Nodo* node, string prefijo = "", bool esUltimo = true, bool esRaiz = true) {
     if (node == nullptr) return;
-    for (int i = 0; i < depth; ++i) {
-        cout << "  ";
+
+    if (esRaiz) {
+        cout << node->getValor() << " (" << nombreTipo(node->getTipo()) << ")" << endl;
+    } else {
+        cout << prefijo;
+        if (esUltimo) {
+            cout << "└── ";
+        } else {
+            cout << "├── ";
+        }
+        cout << node->getValor() << " (" << nombreTipo(node->getTipo()) << ")" << endl;
     }
-    cout << node->getValor() << " (" << nombreTipo(node->getTipo()) << ")" << endl;
-    for (Nodo* child : node->getHijitos()) {
-        traverse(child, depth + 1);
+
+    string nuevoPrefijo = prefijo;
+    if (!esRaiz) {
+        if (esUltimo) {
+            nuevoPrefijo += "    ";
+        } else {
+            nuevoPrefijo += "│   ";
+        }
+    }
+
+    vector<Nodo*> hijos = node->getHijitos();
+    for (size_t i = 0; i < hijos.size(); i++) {
+        bool ultimoHijo = (i == hijos.size() - 1);
+        traverse(hijos[i], nuevoPrefijo, ultimoHijo, false);
     }
 }
 
