@@ -73,11 +73,19 @@ Nodo* Parser::parseFuncion() {
     consumir(Tipo::PARENTESIS_ABRE);
     vector<Nodo*> parametros = parseParametros();
     consumir(Tipo::PARENTESIS_CIERRA);
-    consumir(Tipo::FLECHA);
-    string tipoRetorno = parseTipo();
+
+    string tipoRetorno = "void";
+    if (coincide(Tipo::FLECHA)) {
+        consumir(Tipo::FLECHA);
+        tipoRetorno = parseTipo();
+    }
+
+    consumir(Tipo::LLAVE_ABRE);  
     Nodo* cuerpo = parseCuerpo();
+    consumir(Tipo::LLAVE_CIERRA);
 
     Nodo* funcionNodo = new Nodo(idToken.getValor(), TipoN::FUNCION);
+    funcionNodo->agregarHijito(new Nodo(tipoRetorno, TipoN::IDENTIFICADOR));
     for (Nodo* parametro : parametros) {
         funcionNodo->agregarHijito(parametro);
     }
@@ -116,12 +124,8 @@ Nodo* Parser::parseParametro() {
 }
 
 string Parser::parseTipo() {
-    if (coincide(Tipo::TIPO)) {
-        Token tipoToken = consumir(Tipo::TIPO);
-        return tipoToken.getValor();
-    } else {
-        return "void"; // Tipo por defecto si no se especifica
-    }
+    Token tipoToken = consumir(Tipo::TIPO);
+    return tipoToken.getValor();
 }
 
 Nodo* Parser::parseCuerpo() {
@@ -235,24 +239,23 @@ Nodo* Parser::parsePara() {
 
 Nodo* Parser::parseRango() {
     Nodo* rangoNodo = new Nodo("rango", TipoN::RANGO);
-    Token inicioToken = consumir(Tipo::ENTERO);
+    Nodo* inicioToken = parseMatematica();
     consumir(Tipo::RANGO_FOR);
-    Token finToken = consumir(Tipo::ENTERO);
+    Nodo* finToken = parseMatematica();
 
-    rangoNodo->agregarHijito(new Nodo(inicioToken.getValor(), TipoN::ENTERO));
-    rangoNodo->agregarHijito(new Nodo(finToken.getValor(), TipoN::ENTERO));
+    rangoNodo->agregarHijito(inicioToken);
+    rangoNodo->agregarHijito(finToken);
 
     return rangoNodo;
 }
 
 Nodo* Parser::parseRetorno() {
     consumir(Tipo::RETURN);
-    Nodo* expresionNodo = parseExpresion();
-    consumir(Tipo::PUNTO_COMA);
-
     Nodo* retornoNodo = new Nodo("return", TipoN::RETORNO);
-    retornoNodo->agregarHijito(expresionNodo);
-
+    if (!coincide(Tipo::PUNTO_COMA)) {
+        retornoNodo->agregarHijito(parseExpresion());
+    }
+    consumir(Tipo::PUNTO_COMA);
     return retornoNodo;
 }
 
@@ -368,7 +371,7 @@ Nodo* Parser::parseUnario() {
     if (coincide(Tipo::MAS) || coincide(Tipo::MENOS) || coincide(Tipo::NOT)) {
         Token operadorToken = actual();
         avanzar();
-        Nodo* nodoDerecho = parseFactor();
+        Nodo* nodoDerecho = parseUnario();
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::UNARIA);
         operadorNodo->agregarHijito(nodoDerecho);
