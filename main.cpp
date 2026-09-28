@@ -5,7 +5,10 @@
 using namespace std;
 
 void traverse(Nodo* node, int depth = 0) {
-    for (int i = 0; i < depth; ++i) cout << "  ";
+    if (node == nullptr) return;
+    for (int i = 0; i < depth; ++i) {
+        cout << "  ";
+    }
     cout << node->getValor() << " (" << nombreTipo(node->getTipo()) << ")" << endl;
     for (Nodo* child : node->getHijitos()) {
         traverse(child, depth + 1);
@@ -13,7 +16,9 @@ void traverse(Nodo* node, int depth = 0) {
 }
 
 int main(int argc, char* argv[]){
+
     string ruta;
+
     if(argc>1){
         ruta = argv[1];
     } else {
@@ -62,9 +67,6 @@ int main(int argc, char* argv[]){
     Parser parser(lexer.getTokens(), errores);
     Nodo* arbol = parser.parsear();
 
-    cout << "\nArbol sintactico:" << endl;
-    traverse(arbol);
-
     if (!errores.empty()) {
         cout << "\nErrores:" << endl;
         for (Error& e : errores) {
@@ -74,6 +76,9 @@ int main(int argc, char* argv[]){
     } else {
         cout << "\nNo se encontraron errores." << endl;
     }
+
+    cout << "\nArbol sintactico:" << endl;
+    traverse(arbol);
 
     delete arbol;
     return 0;

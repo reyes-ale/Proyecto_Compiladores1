@@ -48,4 +48,5 @@ class Parser {
         Nodo* parseUnario();
         Nodo* parseFactor();
         vector<Nodo*> parseArgumentos();
+        void sincronizar();
 };

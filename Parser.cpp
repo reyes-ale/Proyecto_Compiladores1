@@ -4,19 +4,19 @@
 
 Parser::Parser(const vector<Token>& tokens, vector<Error>& errores)
     : tokens(tokens), errores(errores) {}
-    
 
 Token& Parser::actual() {
     return tokens[TokenActual];
 }
-
 
 Token& Parser::siguiente() {
     return tokens[TokenActual + 1];
 }
 
 void Parser::avanzar() {
-    TokenActual++;
+    if (TokenActual < (int)tokens.size() - 1) {
+        TokenActual++;
+    }
 }
 
 bool Parser::coincide(Tipo tipoEsperado) {
@@ -29,7 +29,6 @@ Token Parser::consumir(Tipo tipoEsperado) {
         avanzar();
         return t;
     }
-
     errores.push_back(Error(TipoError::SINTACTICO,
         "se esperaba " + nombreTipo(tipoEsperado) +
         " pero se encontro " + nombreTipo(actual().getTipo()),
@@ -48,9 +47,12 @@ Nodo* Parser::parseCodigo() {
 
     while (!coincide(Tipo::FIN_ARCHIVO)) {
         Nodo* elemento = parseElemento();
-        programa->agregarHijito(elemento);
+        if (elemento != nullptr) {
+            programa->agregarHijito(elemento);
+        } else {
+            sincronizar();
+        }
     }
- 
     return programa;
 }
 
@@ -60,16 +62,20 @@ Nodo* Parser::parseElemento() {
     } else if (coincide(Tipo::FN)) {
         return parseFuncion();
     } else {
-        error("Inicio de elemento no reconocido en línea: " + to_string(actual().getLinea())
-                + "\nSe encontró: " + actual().getValor());
-        return nullptr; 
-
-}
+        error("Inicio de elemento no reconocido");
+        return nullptr;
+    }
 }
 
 Nodo* Parser::parseFuncion() {
-    Token fnToken = consumir(Tipo::FN);
+    consumir(Tipo::FN);
     Token idToken = consumir(Tipo::IDENTIFICADOR);
+
+    if (!coincide(Tipo::PARENTESIS_ABRE)) {
+        error("se esperaba ( despues del nombre de la funcion");
+        sincronizar();
+        return new Nodo(idToken.getValor(), TipoN::FUNCION);
+    }
     consumir(Tipo::PARENTESIS_ABRE);
     vector<Nodo*> parametros = parseParametros();
     consumir(Tipo::PARENTESIS_CIERRA);
@@ -80,7 +86,12 @@ Nodo* Parser::parseFuncion() {
         tipoRetorno = parseTipo();
     }
 
-    consumir(Tipo::LLAVE_ABRE);  
+    if (!coincide(Tipo::LLAVE_ABRE)) {
+        error("se esperaba { para el cuerpo de la funcion");
+        sincronizar();
+        return new Nodo(idToken.getValor(), TipoN::FUNCION);
+    }
+    consumir(Tipo::LLAVE_ABRE);
     Nodo* cuerpo = parseCuerpo();
     consumir(Tipo::LLAVE_CIERRA);
 
@@ -90,7 +101,6 @@ Nodo* Parser::parseFuncion() {
         funcionNodo->agregarHijito(parametro);
     }
     funcionNodo->agregarHijito(cuerpo);
-
     return funcionNodo;
 }
 
@@ -98,16 +108,16 @@ vector<Nodo*> Parser::parseParametros() {
     vector<Nodo*> parametros;
 
     if (coincide(Tipo::PARENTESIS_CIERRA)) {
-        return parametros; // eps
+        return parametros;
     }
 
     Nodo* parametro = parseParametro();
-    parametros.push_back(parametro);
+    if (parametro != nullptr) parametros.push_back(parametro);
 
     while (coincide(Tipo::COMA)) {
         consumir(Tipo::COMA);
         parametro = parseParametro();
-        parametros.push_back(parametro);
+        if (parametro != nullptr) parametros.push_back(parametro);
     }
 
     return parametros;
@@ -124,6 +134,10 @@ Nodo* Parser::parseParametro() {
 }
 
 string Parser::parseTipo() {
+    if (!coincide(Tipo::TIPO)) {
+        error("se esperaba un tipo");
+        return "desconocido";
+    }
     Token tipoToken = consumir(Tipo::TIPO);
     return tipoToken.getValor();
 }
@@ -135,12 +149,10 @@ Nodo* Parser::parseCuerpo() {
         Nodo* sentencia = parseSentencia();
         if (sentencia != nullptr) {
             cuerpoNodo->agregarHijito(sentencia);
-        }
-        else{
+        } else {
             sincronizar();
         }
     }
-
     return cuerpoNodo;
 }
 
@@ -159,7 +171,7 @@ Nodo* Parser::parseSentencia() {
         return parseRetorno();
     } else {
         error("Sentencia no reconocida");
-        return nullptr; 
+        return nullptr;
     }
 }
 
@@ -168,7 +180,8 @@ Nodo* Parser::parseDeclaracion() {
     Token idToken = consumir(Tipo::IDENTIFICADOR);
     consumir(Tipo::ASIGNACION);
     Nodo* expresionNodo = parseExpresion();
-     if (!coincide(Tipo::PUNTO_COMA)) {
+
+    if (!coincide(Tipo::PUNTO_COMA)) {
         error("se esperaba ; al final de la declaracion");
         sincronizar();
     } else {
@@ -176,7 +189,11 @@ Nodo* Parser::parseDeclaracion() {
     }
 
     Nodo* declaracionNodo = new Nodo(idToken.getValor(), TipoN::DECLARACION);
-    declaracionNodo->agregarHijito(expresionNodo);
+    if (expresionNodo != nullptr) {
+        declaracionNodo->agregarHijito(expresionNodo);
+    } else {
+        declaracionNodo->agregarHijito(new Nodo("error", TipoN::IDENTIFICADOR));
+    }
     return declaracionNodo;
 }
 
@@ -184,6 +201,7 @@ Nodo* Parser::parseAsignacion() {
     Token idToken = consumir(Tipo::IDENTIFICADOR);
     consumir(Tipo::ASIGNACION);
     Nodo* expresionNodo = parseExpresion();
+
     if (!coincide(Tipo::PUNTO_COMA)) {
         error("se esperaba ; al final de la asignacion");
         sincronizar();
@@ -192,7 +210,11 @@ Nodo* Parser::parseAsignacion() {
     }
 
     Nodo* asignacionNodo = new Nodo(idToken.getValor(), TipoN::ASIGNACION);
-    asignacionNodo->agregarHijito(expresionNodo);
+    if (expresionNodo != nullptr) {
+        asignacionNodo->agregarHijito(expresionNodo);
+    } else {
+        asignacionNodo->agregarHijito(new Nodo("error", TipoN::IDENTIFICADOR));
+    }
     return asignacionNodo;
 }
 
@@ -216,7 +238,7 @@ Nodo* Parser::parseCondicion() {
     }
 
     Nodo* condicionNodo = new Nodo("if", TipoN::CONDICION);
-    condicionNodo->agregarHijito(expresionNodo);
+    if (expresionNodo != nullptr) condicionNodo->agregarHijito(expresionNodo);
     condicionNodo->agregarHijito(cuerpoNodo);
 
     if (coincide(Tipo::ELSE)) {
@@ -243,14 +265,25 @@ Nodo* Parser::parseCondicion() {
 Nodo* Parser::parseWhile() {
     consumir(Tipo::WHILE);
     Nodo* expresionNodo = parseExpresion();
+
+    if (!coincide(Tipo::LLAVE_ABRE)) {
+        error("se esperaba { despues de la condicion del while");
+        sincronizar();
+        return new Nodo("while", TipoN::BUCLE_WHILE);
+    }
     consumir(Tipo::LLAVE_ABRE);
     Nodo* cuerpoNodo = parseCuerpo();
-    consumir(Tipo::LLAVE_CIERRA);
+
+    if (!coincide(Tipo::LLAVE_CIERRA)) {
+        error("se esperaba } al final del bloque while");
+        sincronizar();
+    } else {
+        consumir(Tipo::LLAVE_CIERRA);
+    }
 
     Nodo* whileNodo = new Nodo("while", TipoN::BUCLE_WHILE);
-    whileNodo->agregarHijito(expresionNodo);
+    if (expresionNodo != nullptr) whileNodo->agregarHijito(expresionNodo);
     whileNodo->agregarHijito(cuerpoNodo);
-
     return whileNodo;
 }
 
@@ -259,14 +292,25 @@ Nodo* Parser::parsePara() {
     Token idToken = consumir(Tipo::IDENTIFICADOR);
     consumir(Tipo::IN);
     Nodo* rangoNodo = parseRango();
+
+    if (!coincide(Tipo::LLAVE_ABRE)) {
+        error("se esperaba { despues del rango del for");
+        sincronizar();
+        return new Nodo(idToken.getValor(), TipoN::BUCLE_FOR);
+    }
     consumir(Tipo::LLAVE_ABRE);
     Nodo* cuerpoNodo = parseCuerpo();
-    consumir(Tipo::LLAVE_CIERRA);
+
+    if (!coincide(Tipo::LLAVE_CIERRA)) {
+        error("se esperaba } al final del bloque for");
+        sincronizar();
+    } else {
+        consumir(Tipo::LLAVE_CIERRA);
+    }
 
     Nodo* forNodo = new Nodo(idToken.getValor(), TipoN::BUCLE_FOR);
-    forNodo->agregarHijito(rangoNodo);
+    if (rangoNodo != nullptr) forNodo->agregarHijito(rangoNodo);
     forNodo->agregarHijito(cuerpoNodo);
-
     return forNodo;
 }
 
@@ -276,9 +320,8 @@ Nodo* Parser::parseRango() {
     consumir(Tipo::RANGO_FOR);
     Nodo* finToken = parseMatematica();
 
-    rangoNodo->agregarHijito(inicioToken);
-    rangoNodo->agregarHijito(finToken);
-
+    if (inicioToken != nullptr) rangoNodo->agregarHijito(inicioToken);
+    if (finToken != nullptr) rangoNodo->agregarHijito(finToken);
     return rangoNodo;
 }
 
@@ -286,9 +329,17 @@ Nodo* Parser::parseRetorno() {
     consumir(Tipo::RETURN);
     Nodo* retornoNodo = new Nodo("return", TipoN::RETORNO);
     if (!coincide(Tipo::PUNTO_COMA)) {
-        retornoNodo->agregarHijito(parseExpresion());
+        Nodo* expr = parseExpresion();
+        if (expr != nullptr) {
+            retornoNodo->agregarHijito(expr);
+        }
     }
-    consumir(Tipo::PUNTO_COMA);
+    if (!coincide(Tipo::PUNTO_COMA)) {
+        error("se esperaba ; al final del return");
+        sincronizar();
+    } else {
+        consumir(Tipo::PUNTO_COMA);
+    }
     return retornoNodo;
 }
 
@@ -298,35 +349,41 @@ Nodo* Parser::parseExpresion() {
 
 Nodo* Parser::parseLogica() {
     Nodo* nodoIzquierdo = parseEXPand();
+    if (nodoIzquierdo == nullptr) return nullptr;
 
     while (coincide(Tipo::OR)) {
         Token operadorToken = consumir(Tipo::OR);
         Nodo* nodoDerecho = parseEXPand();
+        if (nodoDerecho == nullptr) {
+            error("operando derecho faltante en ||");
+            return nodoIzquierdo;
+        }
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::BINARIA);
         operadorNodo->agregarHijito(nodoIzquierdo);
         operadorNodo->agregarHijito(nodoDerecho);
-
         nodoIzquierdo = operadorNodo;
     }
-
     return nodoIzquierdo;
 }
 
 Nodo* Parser::parseEXPand() {
     Nodo* nodoIzquierdo = parseEXPnot();
+    if (nodoIzquierdo == nullptr) return nullptr;
 
     while (coincide(Tipo::AND)) {
         Token operadorToken = consumir(Tipo::AND);
         Nodo* nodoDerecho = parseEXPnot();
+        if (nodoDerecho == nullptr) {
+            error("operando derecho faltante en &&");
+            return nodoIzquierdo;
+        }
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::BINARIA);
         operadorNodo->agregarHijito(nodoIzquierdo);
         operadorNodo->agregarHijito(nodoDerecho);
-
         nodoIzquierdo = operadorNodo;
     }
-
     return nodoIzquierdo;
 }
 
@@ -334,10 +391,12 @@ Nodo* Parser::parseEXPnot() {
     if (coincide(Tipo::NOT)) {
         Token operadorToken = consumir(Tipo::NOT);
         Nodo* nodoDerecho = parseRelacional();
-
+        if (nodoDerecho == nullptr) {
+            error("operando faltante despues de !");
+            return nullptr;
+        }
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::UNARIA);
         operadorNodo->agregarHijito(nodoDerecho);
-
         return operadorNodo;
     } else {
         return parseRelacional();
@@ -346,6 +405,7 @@ Nodo* Parser::parseEXPnot() {
 
 Nodo* Parser::parseRelacional() {
     Nodo* nodoIzquierdo = parseMatematica();
+    if (nodoIzquierdo == nullptr) return nullptr;
 
     while (coincide(Tipo::IGUAL_IGUAL) || coincide(Tipo::DISTINTO) ||
            coincide(Tipo::MENOR) || coincide(Tipo::MAYOR) ||
@@ -353,50 +413,58 @@ Nodo* Parser::parseRelacional() {
         Token operadorToken = actual();
         avanzar();
         Nodo* nodoDerecho = parseMatematica();
+        if (nodoDerecho == nullptr) {
+            error("operando derecho faltante en operador relacional");
+            return nodoIzquierdo;
+        }
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::BINARIA);
         operadorNodo->agregarHijito(nodoIzquierdo);
         operadorNodo->agregarHijito(nodoDerecho);
-
         nodoIzquierdo = operadorNodo;
     }
-
     return nodoIzquierdo;
 }
 
 Nodo* Parser::parseMatematica() {
     Nodo* nodoIzquierdo = parseTermino();
+    if (nodoIzquierdo == nullptr) return nullptr;
 
     while (coincide(Tipo::MAS) || coincide(Tipo::MENOS)) {
         Token operadorToken = actual();
         avanzar();
         Nodo* nodoDerecho = parseTermino();
+        if (nodoDerecho == nullptr) {
+            error("operando derecho faltante en operador aritmetico");
+            return nodoIzquierdo;
+        }
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::BINARIA);
         operadorNodo->agregarHijito(nodoIzquierdo);
         operadorNodo->agregarHijito(nodoDerecho);
-
         nodoIzquierdo = operadorNodo;
     }
-
     return nodoIzquierdo;
 }
 
 Nodo* Parser::parseTermino() {
     Nodo* nodoIzquierdo = parseUnario();
+    if (nodoIzquierdo == nullptr) return nullptr;
 
     while (coincide(Tipo::POR) || coincide(Tipo::ENTRE)) {
         Token operadorToken = actual();
         avanzar();
         Nodo* nodoDerecho = parseUnario();
+        if (nodoDerecho == nullptr) {
+            error("operando derecho faltante en * o /");
+            return nodoIzquierdo;
+        }
 
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::BINARIA);
         operadorNodo->agregarHijito(nodoIzquierdo);
         operadorNodo->agregarHijito(nodoDerecho);
-
         nodoIzquierdo = operadorNodo;
     }
-
     return nodoIzquierdo;
 }
 
@@ -405,10 +473,12 @@ Nodo* Parser::parseUnario() {
         Token operadorToken = actual();
         avanzar();
         Nodo* nodoDerecho = parseUnario();
-
+        if (nodoDerecho == nullptr) {
+            error("operando faltante despues de operador unario");
+            return nullptr;
+        }
         Nodo* operadorNodo = new Nodo(operadorToken.getValor(), TipoN::UNARIA);
         operadorNodo->agregarHijito(nodoDerecho);
-
         return operadorNodo;
     } else {
         return parseFactor();
@@ -450,30 +520,33 @@ Nodo* Parser::parseFactor() {
     } else if (coincide(Tipo::PARENTESIS_ABRE)) {
         consumir(Tipo::PARENTESIS_ABRE);
         Nodo* expresionNodo = parseExpresion();
-        consumir(Tipo::PARENTESIS_CIERRA);
+        if (!coincide(Tipo::PARENTESIS_CIERRA)) {
+            error("se esperaba ) para cerrar la expresion");
+            sincronizar();
+        } else {
+            consumir(Tipo::PARENTESIS_CIERRA);
+        }
         return expresionNodo;
     } else {
-        // Manejar error o caso no reconocido
-        error("Factor no reconocido en línea: " + to_string(actual().getLinea())
-                + "\nSe encontró: " + actual().getValor());
+        error("Factor no reconocido");
         return nullptr;
     }
 }
 
 vector<Nodo*> Parser::parseArgumentos() {
-    vector<Nodo*> argumentos;
+    vector<Nodo*> argumentos;//eps
 
     if (coincide(Tipo::PARENTESIS_CIERRA)) {
-        return argumentos; // eps
+        return argumentos;
     }
 
     Nodo* argumento = parseExpresion();
-    argumentos.push_back(argumento);
+    if (argumento != nullptr) argumentos.push_back(argumento);
 
     while (coincide(Tipo::COMA)) {
         consumir(Tipo::COMA);
         argumento = parseExpresion();
-        argumentos.push_back(argumento);
+        if (argumento != nullptr) argumentos.push_back(argumento);
     }
 
     return argumentos;
