@@ -129,7 +129,7 @@ string Parser::parseTipo() {
 }
 
 Nodo* Parser::parseCuerpo() {
-    Nodo* cuerpoNodo = new Nodo("cuerpo", TipoN::PROGRAMA);
+    Nodo* cuerpoNodo = new Nodo("cuerpo", TipoN::BLOQUE);
 
     while (!coincide(Tipo::LLAVE_CIERRA) && !coincide(Tipo::FIN_ARCHIVO)) {
         Nodo* sentencia = parseSentencia();

@@ -8,6 +8,7 @@ using namespace std;
 enum class TipoN{
     PROGRAMA,
     FUNCION,
+    BLOQUE,
     PARAMETRO,
     DECLARACION,
     ASIGNACION,
