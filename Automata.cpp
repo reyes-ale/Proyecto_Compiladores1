@@ -38,7 +38,11 @@ void Automata::reiniciar(){//volver a q0
             }
         }
         else{
-            errores.push_back(Error(TipoError::LEXICO,"lexema invalido '" + lexema + "'",lineaInicio, colInicio));
+              if (lexema[0] == '"') {
+                errores.push_back(Error(TipoError::LEXICO,"cadena sin cerrar",lineaInicio, colInicio));
+            } else {
+                errores.push_back(Error(TipoError::LEXICO,"lexema invalido '" + lexema + "'",lineaInicio, colInicio));
+            }
         }
         lexema="";
     }

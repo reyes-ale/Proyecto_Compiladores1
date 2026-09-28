@@ -12,7 +12,7 @@ void TablaSimbolos::insertar(string nombre, string tipo) {
 void TablaSimbolos::imprimir() {
     cout << "\n Tabla de Simbolos:" << endl;
     cout << "Id\tLexema\t\tTipo" << endl;
-    cout << "---\t------\t\t----" << endl;
+    cout << "----------------------------------" << endl;
     for (Simbolo& s : simbolos) {
         cout << s.getPosicion() << "\t" << s.getNombre() << "\t\t";
         if (s.getTipo().empty()) {
