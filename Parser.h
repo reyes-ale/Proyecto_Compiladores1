@@ -1,17 +1,19 @@
+#pragma once
 #include <iostream>
 #include <cstdlib>
 #include <vector>
 #include "Nodo.h"
+#include "Error.h"
 using namespace std;
 
 class Parser {
     private:
         vector<Token> tokens;
         int TokenActual = 0;
+        vector<Error>& errores;
 
     public:
-        Parser();
-        Parser(const vector<Token>& tokens);
+        Parser(const vector<Token>& tokens, vector<Error>& errores);
         int getActual();
         void avanzar();
         Token& actual();
@@ -20,7 +22,6 @@ class Parser {
         Token consumir(Tipo tipoEsperado);
         void error(string mensaje);
 
-        //Métodos para ir derivadndo
         Nodo* parsear();
         Nodo* parseCodigo();
         Nodo* parseElemento();
@@ -47,5 +48,4 @@ class Parser {
         Nodo* parseUnario();
         Nodo* parseFactor();
         vector<Nodo*> parseArgumentos();
-        
 };

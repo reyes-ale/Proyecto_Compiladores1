@@ -1,22 +1,19 @@
 #include <iostream>
 #include "Lexer.h"
 #include "Parser.h"
+#include "Error.h"
 using namespace std;
 
 void traverse(Nodo* node, int depth = 0) {
-    for (int i = 0; i < depth; ++i) {
-        cout << "  "; // Indentación
-    }
-    cout << node->getValor() << " (" << static_cast<int>(node->getTipo()) << ")" << endl;
+    for (int i = 0; i < depth; ++i) cout << "  ";
+    cout << node->getValor() << " (" << nombreTipo(node->getTipo()) << ")" << endl;
     for (Nodo* child : node->getHijitos()) {
         traverse(child, depth + 1);
     }
 }
 
 int main(int argc, char* argv[]){
-
     string ruta;
-
     if(argc>1){
         ruta = argv[1];
     } else {
@@ -39,28 +36,45 @@ int main(int argc, char* argv[]){
     cout << "analisis de: " << ruta << endl;
     lexer.analizar(codigo);
 
+    vector<Error> errores = lexer.getErrores();
+
     cout << "Tokens:" << endl;
     for (Token token : lexer.getTokens()) {
         cout << "Token: " << token.getValor() << " Tipo: " << nombreTipo(token.getTipo())
              << " (" << token.getLinea() << ":" << token.getColumna() << ")" << endl;
     }
 
-    vector<string> errores = lexer.getErrores();
-    if(!errores.empty()){
-        cout << "Errores:" << endl;
-        for (string error : errores) {
-            cout << error << endl;
-        }
+    bool hayLexicos = false;
+    for (Error& e : errores) {
+        if (e.getTipo() == TipoError::LEXICO) hayLexicos = true;
     }
-    if (errores.size()>0){
+
+    if (hayLexicos) {
+        cout << "\nErrores:" << endl;
+        for (Error& e : errores) {
+            cout << "[" << e.getTipoStr() << "] " << e.getMensaje()
+                 << " (linea " << e.getLinea() << ", col " << e.getColumna() << ")" << endl;
+        }
         cout << "Se encontraron errores lexicos, no se puede continuar con el analisis sintactico" << endl;
         return 1;
     }
 
-    Parser parser(lexer.getTokens());
+    Parser parser(lexer.getTokens(), errores);
     Nodo* arbol = parser.parsear();
+
+    cout << "\nArbol sintactico:" << endl;
     traverse(arbol);
+
+    if (!errores.empty()) {
+        cout << "\nErrores:" << endl;
+        for (Error& e : errores) {
+            cout << "[" << e.getTipoStr() << "] " << e.getMensaje()
+                 << " (linea " << e.getLinea() << ", col " << e.getColumna() << ")" << endl;
+        }
+    } else {
+        cout << "\nNo se encontraron errores." << endl;
+    }
+
+    delete arbol;
     return 0;
 }
-
-

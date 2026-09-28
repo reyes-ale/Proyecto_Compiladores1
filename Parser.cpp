@@ -2,7 +2,9 @@
 #include <iostream>
 #include <cstdlib>
 
-Parser::Parser(const vector<Token>& tokens) : tokens(tokens) {}
+Parser::Parser(const vector<Token>& tokens, vector<Error>& errores)
+    : tokens(tokens), errores(errores) {}
+    
 
 Token& Parser::actual() {
     return tokens[TokenActual];
@@ -27,14 +29,11 @@ Token Parser::consumir(Tipo tipoEsperado) {
         avanzar();
         return t;
     }
-    cerr << "Error sintactico: se esperaba "
-         << nombreTipo(tipoEsperado)
-         << " pero se encontro "
-         << nombreTipo(actual().getTipo())
-         << " en línea: "
-         << actual().getLinea()
-         << endl;
-    exit(1);
+    errores.push_back(Error(TipoError::SINTACTICO,
+        "se esperaba " + nombreTipo(tipoEsperado) +
+        " pero se encontro " + nombreTipo(actual().getTipo()),
+        actual().getLinea(), actual().getColumna()));
+    return Token("", Tipo::NINGUNO, actual().getLinea(), actual().getColumna());
 }
 
 // Derivaciones
@@ -447,6 +446,7 @@ vector<Nodo*> Parser::parseArgumentos() {
 }
 
 void Parser::error(string mensaje) {
-    cerr << "Error sintactico: " << mensaje << endl;
-    exit(1);
+    errores.push_back(Error(TipoError::SINTACTICO,
+        mensaje,
+        actual().getLinea(), actual().getColumna()));
 }

@@ -29,7 +29,7 @@ enum class TipoN{
     BOOLEANO,
     FIN_ARCHIVO
 };
-string nombreTipo (Tipo tipo);
+string nombreTipo (TipoN tipo);
 
 class Nodo {
     

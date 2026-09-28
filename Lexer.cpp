@@ -86,7 +86,7 @@ void Lexer::construirAutomata() {
     Transicion numero(regex("[0-9]"), q2);
     q0->agregarTransicion(&numero);
 
-    Transicion simbolo(regex("[;+*(){}[\\]:,=]"), q3);
+    Transicion simbolo(regex("[;+*(){}[\\]:,]"), q3);
     q0->agregarTransicion(&simbolo);
 
     Transicion and1(regex("\\&"), q4);
@@ -250,6 +250,6 @@ vector<Token> Lexer::getTokens() {
     return automata.getTokens();
 }
 
-vector<string> Lexer::getErrores() {
+vector<Error> Lexer::getErrores() {
     return automata.getErrores();
 }

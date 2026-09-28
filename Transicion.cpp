@@ -5,6 +5,7 @@ using namespace std;
 Transicion::Transicion(regex patron, Estado* siguiente) {
     this->patron = patron;
     this->siguiente = siguiente;
+     this->descarta = false;
 }
 
 Transicion::Transicion(regex patron, Estado* siguiente, bool descarta) {

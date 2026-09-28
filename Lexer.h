@@ -5,6 +5,7 @@
 #include "Automata.h"
 #include "Estado.h"
 #include "Token.h"
+#include "Error.h"
 using namespace std;
 
 class Lexer {
@@ -22,5 +23,5 @@ class Lexer {
         void analizar(string codigo);
 
         vector<Token> getTokens();
-        vector<string> getErrores();
+        vector<Error> getErrores();
 };

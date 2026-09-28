@@ -36,16 +36,13 @@ void Automata::reiniciar(){//volver a q0
                 Token token (lexema,tipo,lineaInicio, colInicio);
                 tokensitos.push_back(token);
             }
-            // los comentarios se descartan: no son token ni error
         }
         else{
-            errores.push_back("Error lexico: lexema invalido '" + lexema + "' en linea "
-                + to_string(lineaInicio) + " columna " + to_string(colInicio));
+            errores.push_back(Error(TipoError::LEXICO,"lexema invalido '" + lexema + "'",lineaInicio, colInicio));
         }
         lexema="";
-        estadoActual = estadoInicial;
-
     }
+    estadoActual = estadoInicial;
 
 
 }
@@ -59,8 +56,7 @@ void Automata::avanzar(char caracter){
 
             transicion = estadoActual->getTransicion(caracter);
             if(transicion == nullptr){
-                errores.push_back("Error lexico: caracter no reconocido '" + string(1, caracter)
-                    + "' en linea " + to_string(linea) + " columna " + to_string(columna));
+                errores.push_back(Error(TipoError::LEXICO,"caracter no reconocido '" + string(1, caracter) + "'",linea, columna));
                 moverPos(caracter);
                 return;
             }
@@ -96,7 +92,7 @@ vector<Token> Automata::getTokens(){
     return tokensitos;
 }
 
-vector<string> Automata::getErrores(){
+vector<Error> Automata::getErrores(){
     return errores;
 }
 
