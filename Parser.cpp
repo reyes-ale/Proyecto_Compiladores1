@@ -29,6 +29,7 @@ Token Parser::consumir(Tipo tipoEsperado) {
         avanzar();
         return t;
     }
+
     errores.push_back(Error(TipoError::SINTACTICO,
         "se esperaba " + nombreTipo(tipoEsperado) +
         " pero se encontro " + nombreTipo(actual().getTipo()),
@@ -135,6 +136,9 @@ Nodo* Parser::parseCuerpo() {
         if (sentencia != nullptr) {
             cuerpoNodo->agregarHijito(sentencia);
         }
+        else{
+            sincronizar();
+        }
     }
 
     return cuerpoNodo;
@@ -154,10 +158,8 @@ Nodo* Parser::parseSentencia() {
     } else if (coincide(Tipo::RETURN)) {
         return parseRetorno();
     } else {
-        error("Sentencia no reconocida en línea: " + to_string(actual().getLinea())
-                + "\nSe encontró: " + actual().getValor());
-        
-        return nullptr; // Manejar error o sentencia no reconocida
+        error("Sentencia no reconocida");
+        return nullptr; 
     }
 }
 
@@ -166,7 +168,12 @@ Nodo* Parser::parseDeclaracion() {
     Token idToken = consumir(Tipo::IDENTIFICADOR);
     consumir(Tipo::ASIGNACION);
     Nodo* expresionNodo = parseExpresion();
-    consumir(Tipo::PUNTO_COMA);
+     if (!coincide(Tipo::PUNTO_COMA)) {
+        error("se esperaba ; al final de la declaracion");
+        sincronizar();
+    } else {
+        consumir(Tipo::PUNTO_COMA);
+    }
 
     Nodo* declaracionNodo = new Nodo(idToken.getValor(), TipoN::DECLARACION);
     declaracionNodo->agregarHijito(expresionNodo);
@@ -177,7 +184,12 @@ Nodo* Parser::parseAsignacion() {
     Token idToken = consumir(Tipo::IDENTIFICADOR);
     consumir(Tipo::ASIGNACION);
     Nodo* expresionNodo = parseExpresion();
-    consumir(Tipo::PUNTO_COMA);
+    if (!coincide(Tipo::PUNTO_COMA)) {
+        error("se esperaba ; al final de la asignacion");
+        sincronizar();
+    } else {
+        consumir(Tipo::PUNTO_COMA);
+    }
 
     Nodo* asignacionNodo = new Nodo(idToken.getValor(), TipoN::ASIGNACION);
     asignacionNodo->agregarHijito(expresionNodo);
@@ -187,9 +199,21 @@ Nodo* Parser::parseAsignacion() {
 Nodo* Parser::parseCondicion() {
     consumir(Tipo::IF);
     Nodo* expresionNodo = parseExpresion();
+
+    if (!coincide(Tipo::LLAVE_ABRE)) {
+        error("se esperaba { despues de la condicion");
+        sincronizar();
+        return new Nodo("if", TipoN::CONDICION);
+    }
     consumir(Tipo::LLAVE_ABRE);
     Nodo* cuerpoNodo = parseCuerpo();
-    consumir(Tipo::LLAVE_CIERRA);
+
+    if (!coincide(Tipo::LLAVE_CIERRA)) {
+        error("se esperaba } al final del bloque if");
+        sincronizar();
+    } else {
+        consumir(Tipo::LLAVE_CIERRA);
+    }
 
     Nodo* condicionNodo = new Nodo("if", TipoN::CONDICION);
     condicionNodo->agregarHijito(expresionNodo);
@@ -197,9 +221,19 @@ Nodo* Parser::parseCondicion() {
 
     if (coincide(Tipo::ELSE)) {
         consumir(Tipo::ELSE);
+        if (!coincide(Tipo::LLAVE_ABRE)) {
+            error("se esperaba { despues de else");
+            sincronizar();
+            return condicionNodo;
+        }
         consumir(Tipo::LLAVE_ABRE);
         Nodo* cuerpoElseNodo = parseCuerpo();
-        consumir(Tipo::LLAVE_CIERRA);
+        if (!coincide(Tipo::LLAVE_CIERRA)) {
+            error("se esperaba } al final del bloque else");
+            sincronizar();
+        } else {
+            consumir(Tipo::LLAVE_CIERRA);
+        }
         condicionNodo->agregarHijito(cuerpoElseNodo);
     }
 
@@ -449,4 +483,22 @@ void Parser::error(string mensaje) {
     errores.push_back(Error(TipoError::SINTACTICO,
         mensaje,
         actual().getLinea(), actual().getColumna()));
+}
+
+void Parser::sincronizar(){
+    while(!coincide(Tipo::FIN_ARCHIVO)){
+        if(coincide (Tipo::PUNTO_COMA)){
+            avanzar();
+            return;
+        }
+        if(coincide(Tipo::LLAVE_CIERRA)){
+            return;
+        }
+        if (coincide(Tipo::FN) || coincide(Tipo::LET) || coincide(Tipo::IF) ||
+            coincide(Tipo::WHILE) || coincide(Tipo::FOR) || coincide(Tipo::RETURN)) {
+            return;
+        }
+        avanzar();
+
+    }
 }
